@@ -4,7 +4,9 @@
 
 ## Team Members
 Mukunzi Patrick  Frontend Developer
+
 Samuel Komaiya  Backend Developer
+
 Plamedi mayala Backend Developer
 
 ## 🧭 Overview
@@ -100,5 +102,6 @@ learnhub/
 │
 ├── backend/
 │   ├── learnhub_api/
+    ├── api/
 │   ├── manage.py
 │   └── requirements.txt
