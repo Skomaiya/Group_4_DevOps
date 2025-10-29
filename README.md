@@ -18,8 +18,8 @@ In many African educational institutions, students face significant barriers to 
 LearnHub tackles this by providing a **central, data-efficient, and accessible platform**.
 
 It is *intentionally* minimal, ensuring it is fast and consumes less data, making it ideal for low-bandwidth mobile connections. Our value proposition is **accessible education**:
-* **For Students:** A "single source of truth" to find courses, download lightweight materials, and track progress without high data usage.
-* **For Instructors:** A simple, no-frills way to upload content (text, video links, documents) and manage their classes.
+* **For Students:** A "single source of truth" to find courses without high data usage.
+* **For Instructors:** A simple way to upload content (text, video links, documents) and manage their classes.
 
 ### Project Goal (DevOps Course)
 While the application is a functional LMS, its primary purpose in this course is to serve as a real-world workload for a robust DevOps implementation. The main goal is to design, develop, and deploy this production-ready application while mastering CI/CD, containerization, and cloud deployment practices.
