@@ -1,50 +1,67 @@
-# LearnHub - Lightweight Learning Management System (LMS)
-> Your gateway to simplified online education and hands-on DevOps deployment.
-
+# LearnHub - A Lightweight African Learning Platform
+> A data-efficient LMS designed for and by African students, built to practice production-level DevOps.
 
 ## Team Members
-Mukunzi Patrick  Frontend Developer
-
-Samuel Komaiya  Backend Developer
-
-Plamedi mayala Backend Developer
+* Mukunzi Patrick (Frontend Developer)
+* Samuel Komaiya (Backend Developer)
+* Plamedi Mayala (Backend Developer)
 
 ## 🧭 Overview
-LearnHub is a modern, minimal Learning Management System designed to deliver an efficient and scalable online learning experience.
+LearnHub is a lightweight, mobile-first Learning Management System (LMS) built to address the unique challenges of university and secondary students across Africa.
 
-Built with React (TypeScript) and Django (PostgreSQL), it allows students to browse and enroll in courses while instructors can create and manage course content.
-The main goal of this project is to design, develop, and deploy a functional, production-ready LMS while implementing DevOps practices such as CI/CD pipelines, containerization, and cloud deployment.
+### The Problem (African Context)
+In many African educational institutions, students face significant barriers to digital learning. These include:
+1.  **High Data Costs:** Internet access is expensive, making it difficult to stream video-heavy courses or download large files.
+2.  **Scattered Resources:** Critical study materials like past exam papers (e.g., WAEC, JAMB), lecture notes, and study guides are often scattered across informal WhatsApp groups, making them hard to find, track, and access.
+
+### Our Solution & Value Proposition
+LearnHub tackles this by providing a **central, data-efficient, and accessible platform**.
+
+It is *intentionally* minimal, ensuring it is fast and consumes less data, making it ideal for low-bandwidth mobile connections. Our value proposition is **accessible education**:
+* **For Students:** A "single source of truth" to find courses, download lightweight materials, and track progress without high data usage.
+* **For Instructors:** A simple, no-frills way to upload content (text, video links, documents) and manage their classes.
+
+### Project Goal (DevOps Course)
+While the application is a functional LMS, its primary purpose in this course is to serve as a real-world workload for a robust DevOps implementation. The main goal is to design, develop, and deploy this production-ready application while mastering CI/CD, containerization, and cloud deployment practices.
 
 ## 🎯 Project Objectives
-* Build a functional and minimal LMS with authentication, role-based access, and core course features.
-* Implement DevOps pipelines for continuous integration and deployment.
-* Deploy the full-stack application to a cloud environment (e.g., AWS, Azure, or Render).
-* Ensure scalability, maintainability, and reliability through good architectural practices.
+* Build a functional and minimal LMS that addresses the core problem of resource accessibility for African students.
+* Implement role-based access for the two key user groups (Students and Instructors).
+* Implement a full DevOps pipeline for continuous integration and deployment.
+* Deploy the containerized, full-stack application to a cloud environment (e.g., AWS, Render).
+* Ensure the final product is scalable, maintainable, and reliable.
 
-## 👥 User Roles
+## 👥 Target Users
+
 ### Students
-* Register, log in, and manage profile.
-* Browse available courses and enroll.
-* Take course lessons and quizzes.
-* Track course completion progress.
+* **Who:** University or senior secondary students in an African context (e.g., Nigeria, Kenya, Rwanda).
+* **Needs:** A low-cost, easy-to-access, and reliable way to find localized study materials, course notes, and past papers.
+* **Features:**
+    * Register, log in, and manage a simple profile.
+    * Browse available courses and enroll.
+    * Access course lessons (text, video links) and download resources.
+    * Track course completion progress.
 
 ### Instructors
-* Create, edit, and publish courses.
-* Upload lessons (text, video links).
-* Manage student enrollments.
-* View student progress and submissions.
+* **Who:** University lecturers, teaching assistants (TAs), or even student tutors running study groups.
+* **Needs:** A simple, fast way to upload materials and communicate with their students without a complex interface.
+* **Features:**
+    * Create, edit, and publish courses.
+    * Upload lessons (text, links to videos, PDF uploads).
+    * Manage student enrollments for their courses.
+    * View student progress and submissions.
 
 ## ⚙️ Core Features (MVP Scope)
 
 | Category | Features |
 | :--- | :--- |
-| *Authentication* | Django-based user registration & JWT authentication. Role-based access (Student/Instructor). |
-| *Course Management* | Instructors can create, edit, and delete their own courses. |
-| *Enrollment System* | Students can browse and enroll in published courses. |
-| *Lesson Management* | Each course can have multiple lessons (text or video). |
-| *Quizzes (Optional)* | Simple quiz functionality (multiple-choice). |
-| *User Dashboard* | Track enrolled courses and progress. |
-| *Responsive UI* | Modern, responsive interface built with TailwindCSS. |
+| **Authentication** | Django-based user registration & JWT authentication. Role-based access (Student/Instructor). |
+| **Course Management** | Instructors can create, edit, and delete their own courses. |
+| **Enrollment System** | Students can browse and enroll in published courses. |
+| **Lesson Management** | Each course can have multiple lessons (text or video). |
+| **Quizzes (Optional)** | Simple quiz functionality (multiple-choice). |
+| **User Dashboard** | Track enrolled courses and progress. |
+| **Responsive UI** | Modern, responsive interface built with TailwindCSS. |
 
 ## 🧩 Technology Stack
 ### Frontend
@@ -71,20 +88,20 @@ The main goal of this project is to design, develop, and deploy a functional, pr
 
 ## 🧱 High-Level Architecture
 Deployed as:
-* *Frontend* → Hosted on Netlify / Vercel
-* *Backend* → Hosted on Render / Railway / AWS EC2
-* *Database* → PostgreSQL (managed service)
-* *CI/CD* → GitHub Actions automated pipeline
+* **Frontend** → Hosted on Netlify / Vercel
+* **Backend** → Hosted on Render / Railway / AWS EC2
+* **Database** → PostgreSQL (managed service)
+* **CI/CD** → GitHub Actions automated pipeline
 
 ## 🧪 Planned DevOps Implementations
 
 | Tool | Purpose |
 | :--- | :--- |
-| *Docker* | Containerize frontend and backend services |
-| *Docker Compose* | Manage multi-container setup |
-| *GitHub Actions* | Build, test, and deploy automatically |
-| *Environment Variables* | Secure configuration handling |
-| *Cloud Deployment* | Deploy containers to Render, Railway, or AWS |
+| **Docker** | Containerize frontend and backend services |
+| **Docker Compose** | Manage multi-container setup |
+| **GitHub Actions** | Build, test, and deploy automatically |
+| **Environment Variables** | Secure configuration handling |
+| **Cloud Deployment** | Deploy containers to Render, Railway, or AWS |
 
 ## 🧰 Project Structure
 
