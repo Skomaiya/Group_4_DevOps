@@ -102,6 +102,6 @@ learnhub/
 │
 ├── backend/
 │   ├── learnhub_api/
-    ├── api/
+│   ├── api/
 │   ├── manage.py
 │   └── requirements.txt
