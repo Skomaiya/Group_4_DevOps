@@ -12,14 +12,14 @@ LearnHub is a lightweight, mobile-first Learning Management System (LMS) built t
 ### The Problem (African Context)
 In many African educational institutions, students face significant barriers to digital learning. These include:
 1.  **High Data Costs:** Internet access is expensive, making it difficult to stream video-heavy courses or download large files.
-2.  **Scattered Resources:** Critical study materials like past exam papers (e.g., WAEC, JAMB), lecture notes, and study guides are often scattered across informal WhatsApp groups, making them hard to find, track, and access.
+2.  **Scattered Resources:** Critical study materials like past exam papers, lecture notes, and study guides are often scattered across making them hard to find, track, and access.
 
 ### Our Solution & Value Proposition
 LearnHub tackles this by providing a **central, data-efficient, and accessible platform**.
 
 It is *intentionally* minimal, ensuring it is fast and consumes less data, making it ideal for low-bandwidth mobile connections. Our value proposition is **accessible education**:
 * **For Students:** A "single source of truth" to find courses without high data usage.
-* **For Instructors:** A simple way to upload content (text, video links, documents) and manage their classes.
+* **For Instructors:** A simple way to upload content (text, video links).
 
 ### Project Goal (DevOps Course)
 While the application is a functional LMS, its primary purpose in this course is to serve as a real-world workload for a robust DevOps implementation. The main goal is to design, develop, and deploy this production-ready application while mastering CI/CD, containerization, and cloud deployment practices.
@@ -47,7 +47,7 @@ While the application is a functional LMS, its primary purpose in this course is
 * **Needs:** A simple, fast way to upload materials and communicate with their students without a complex interface.
 * **Features:**
     * Create, edit, and publish courses.
-    * Upload lessons (text, links to videos, PDF uploads).
+    * Upload lessons (text and videos links).
     * Manage student enrollments for their courses.
     * View student progress and submissions.
 
