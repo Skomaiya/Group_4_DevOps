@@ -122,3 +122,113 @@ learnhub/
 │   ├── api/
 │   ├── manage.py
 │   └── requirements.txt
+│
+├── Dockerfile
+├── docker-compose.yml
+└── .dockerignore
+```
+
+## 🐳 Running with Docker Compose
+
+This project is containerized using Docker and Docker Compose for easy local development and deployment.
+
+### Prerequisites
+
+- [Docker](https://docs.docker.com/get-docker/) (version 20.10 or higher)
+- [Docker Compose](https://docs.docker.com/compose/install/) (version 2.0 or higher)
+
+### Quick Start
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Skomaiya/Group_4_DevOps.git
+   cd Group_4_DevOps
+   ```
+
+2. **Start the services:**
+   ```bash
+   docker-compose up --build
+   ```
+   
+   This command will:
+   - Build the Django backend image
+   - Start PostgreSQL database
+   - Run database migrations
+   - Start the Django development server
+
+3. **Access the application:**
+   - Backend API: http://localhost:8000/api
+   - API Documentation: http://localhost:8000/api/schema/swagger-ui/
+   - Admin Panel: http://localhost:8000/admin/
+
+### Docker Compose Commands
+
+```bash
+# Start services in detached mode (background)
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Stop services and remove volumes (⚠️ deletes database data)
+docker-compose down -v
+
+# Rebuild containers after code changes
+docker-compose up --build
+
+# Run Django management commands
+docker-compose exec web python manage.py migrate
+docker-compose exec web python manage.py createsuperuser
+docker-compose exec web python manage.py collectstatic
+```
+
+### Environment Variables
+
+The `docker-compose.yml` file includes default environment variables. For production, create a `.env` file in the project root:
+
+```env
+SECRET_KEY=your-secret-key-here
+DEBUG=False
+ALLOWED_HOSTS=your-domain.com
+DB_ENGINE=django.db.backends.postgresql
+DB_NAME=learnhub_db
+DB_USER=myuser
+DB_PASSWORD=your-secure-password
+DB_HOST=db
+DB_PORT=5432
+```
+
+### Database Migrations
+
+After starting the containers for the first time, run migrations:
+
+```bash
+docker-compose exec web python manage.py migrate
+```
+
+### Creating a Superuser
+
+To access the Django admin panel:
+
+```bash
+docker-compose exec web python manage.py createsuperuser
+```
+
+### Dockerfile Features
+
+- **Base Image:** `python:3.11-slim` for a lightweight container
+- **Security:** Runs as non-root user (`appuser`)
+- **Optimization:** Multi-stage build cache for faster rebuilds
+- **PostgreSQL Client:** Included for database connections
+
+### Troubleshooting
+
+**Port already in use:**
+```bash
+# Change the port mapping in docker-compose.yml
+ports:
+  - "8000:8000"
+```
