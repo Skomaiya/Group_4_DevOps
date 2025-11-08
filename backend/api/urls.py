@@ -4,12 +4,16 @@ from rest_framework_simplejwt.views import TokenRefreshView
 from api.views.user_views import UserViewSet, ProfileViewSet
 from api.views.user_views import CurrentUserView, CurrentUserProfileView
 from api.views.auth_views import RegisterView, LoginView, LogoutView
+from api.views.course_views import CourseViewSet, LessonViewSet, EnrollmentViewSet
 
 router = DefaultRouter()
 
 # Register ViewSets
 router.register(r'users', UserViewSet, basename='users')
 router.register(r'profiles', ProfileViewSet, basename='profiles')
+router.register(r'courses', CourseViewSet, basename='courses')
+router.register(r'lessons', LessonViewSet, basename='lessons')
+router.register(r'enrollments', EnrollmentViewSet, basename='enrollments')
 
 
 urlpatterns = [
