@@ -4,7 +4,6 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.views import TokenObtainPairView
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
-from rest_framework.views import APIView
 from django.core.cache import cache
 from django.conf import settings
 from drf_spectacular.utils import extend_schema
@@ -18,6 +17,7 @@ from api.authentication import get_tokens_for_user
 
 User = get_user_model()
 CACHE_TTL = getattr(settings, 'CACHE_TTL', 300)
+
 
 @extend_schema(tags=["Authentication"])
 class RegisterView(generics.CreateAPIView):
@@ -46,7 +46,6 @@ class RegisterView(generics.CreateAPIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-
 @extend_schema(tags=["Authentication"])
 class LoginView(TokenObtainPairView):
     permission_classes = [AllowAny]
@@ -63,6 +62,7 @@ class LoginView(TokenObtainPairView):
         cache.set(cache_key, True, timeout=30)
 
         return response
+
 
 @extend_schema(tags=["Authentication"])
 class LogoutView(generics.GenericAPIView):

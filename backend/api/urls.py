@@ -20,7 +20,7 @@ urlpatterns = [
     path('', include(router.urls)),
     path('user/', CurrentUserView.as_view(), name='current-user'),
     path('profile/', CurrentUserProfileView.as_view(), name='current-user-profile'),
-    
+
     # Authentication endpoints
     path('auth/register/', RegisterView.as_view(), name='register'),
     path('auth/login/', LoginView.as_view(), name='login'),

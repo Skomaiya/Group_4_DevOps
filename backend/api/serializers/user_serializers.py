@@ -77,7 +77,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         group_name = 'Student' if role == 'student' else 'Instructor'
         group, _ = Group.objects.get_or_create(name=group_name)
         user.groups.add(group)
-        
+
         Profile.objects.get_or_create(user=user)
 
         return user
@@ -90,7 +90,8 @@ class LogoutSerializer(serializers.Serializer):
         if 'refresh' not in attrs:
             raise serializers.ValidationError("Refresh token is required.")
         return attrs
-    
+
+
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(self, attrs):
         data = super().validate(attrs)

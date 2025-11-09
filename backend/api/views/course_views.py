@@ -57,7 +57,7 @@ class CourseViewSet(viewsets.ModelViewSet):
         - Draft courses are only visible to the instructor
         """
         queryset = Course.objects.all()
-        
+
         # Filter out drafts for non-owners
         if not self.request.user.is_authenticated or self.request.user.role != 'instructor':
             queryset = queryset.filter(status='published')
@@ -66,7 +66,7 @@ class CourseViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(
                 instructor=self.request.user
             ) | Course.objects.filter(status='published')
-        
+
         return queryset
 
     def perform_create(self, serializer):
@@ -83,7 +83,7 @@ class CourseViewSet(viewsets.ModelViewSet):
                 {"detail": "You don't have permission to view students for this course."},
                 status=status.HTTP_403_FORBIDDEN
             )
-        
+
         enrollments = Enrollment.objects.filter(course=course)
         serializer = EnrollmentSerializer(enrollments, many=True)
         return Response(serializer.data)
@@ -98,30 +98,30 @@ class CourseViewSet(viewsets.ModelViewSet):
                 {"detail": "Only students can enroll in courses."},
                 status=status.HTTP_403_FORBIDDEN
             )
-        
+
         course = self.get_object()
-        
+
         # Check if already enrolled
         enrollment, created = Enrollment.objects.get_or_create(
             student=request.user,
             course=course,
             defaults={'status': 'active'}
         )
-        
+
         if not created:
             return Response(
                 {"detail": "You are already enrolled in this course."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
         # Update counts
         course.enrolled_students_count += 1
         course.save()
-        
+
         if hasattr(request.user, 'profile'):
             request.user.profile.enrolled_courses_count += 1
             request.user.profile.save()
-        
+
         serializer = EnrollmentSerializer(enrollment)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -134,7 +134,7 @@ class LessonViewSet(viewsets.ModelViewSet):
     - Create/Update/Delete: Only course instructor
     """
     queryset = Lesson.objects.all()
-    
+
     def get_serializer_class(self):
         if self.action == 'create' or self.action == 'update' or self.action == 'partial_update':
             return LessonCreateSerializer
@@ -155,7 +155,7 @@ class LessonViewSet(viewsets.ModelViewSet):
         Filter lessons by course visibility
         """
         queryset = Lesson.objects.select_related('course', 'course__instructor').all()
-        
+
         # Filter out lessons from unpublished courses for non-owners
         if not self.request.user.is_authenticated:
             queryset = queryset.filter(course__status='published')
@@ -166,7 +166,7 @@ class LessonViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(
                 course__instructor=self.request.user
             ) | Lesson.objects.filter(course__status='published')
-        
+
         return queryset
 
     def perform_create(self, serializer):
@@ -216,34 +216,33 @@ class EnrollmentViewSet(viewsets.ModelViewSet):
         Update enrollment progress (students only).
         """
         enrollment = self.get_object()
-        
+
         if enrollment.student != request.user:
             return Response(
                 {"detail": "You can only update your own enrollment progress."},
                 status=status.HTTP_403_FORBIDDEN
             )
-        
+
         progress = request.data.get('progress_percentage', 0)
         if progress < 0 or progress > 100:
             return Response(
                 {"detail": "Progress must be between 0 and 100."},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        
+
         enrollment.progress_percentage = progress
-        
+
         # Auto-update status to completed if progress is 100%
         if progress >= 100:
             if enrollment.status != 'completed':
                 enrollment.status = 'completed'
                 enrollment.completed_at = timezone.now()
-                
+
                 # Update student's completed courses count
                 if hasattr(request.user, 'profile'):
                     request.user.profile.completed_courses_count += 1
                     request.user.profile.save()
-        
+
         enrollment.save()
         serializer = EnrollmentSerializer(enrollment)
         return Response(serializer.data)
-

@@ -34,20 +34,20 @@ class Profile(models.Model):
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     bio = models.TextField(blank=True, help_text="User biography")
-    
+
     # Instructor-specific fields
     expertise = models.TextField(blank=True, help_text="Areas of expertise (for instructors)")
     credentials = models.JSONField(default=list, blank=True, help_text="Academic credentials and certifications")
     teaching_experience = models.IntegerField(default=0, help_text="Years of teaching experience (for instructors)")
-    
-    # Student-specific fields  
+
+    # Student-specific fields
     enrolled_courses_count = models.IntegerField(default=0, help_text="Number of courses enrolled (for students)")
     completed_courses_count = models.IntegerField(default=0, help_text="Number of completed courses (for students)")
-    
+
     # Common fields
     languages = models.JSONField(default=list, blank=True, help_text="Languages spoken")
     profile_picture = models.URLField(blank=True, help_text="URL to profile picture")
-    
+
     linkedin_url = models.URLField(blank=True)
     github_url = models.URLField(blank=True, help_text="GitHub profile (for instructors)")
     website = models.URLField(blank=True)
