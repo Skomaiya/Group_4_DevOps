@@ -1,7 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticated
-from api.models import User, Profile
-from api.serializers import UserSerializer, ProfileSerializer
+from api.models.user import User, Profile
+from api.serializers.user_serializers import UserSerializer, ProfileSerializer
 from api.permissions import IsAdmin
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -46,8 +46,10 @@ class CurrentUserView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request):
+        user_id = request.user.id
         request.user.delete()
-        cache.delete(f"{USER_CACHE_KEY}_{request.user.id}")
+        cache.delete(f"{USER_CACHE_KEY}_{user_id}")
+        cache.delete(f"{PROFILE_CACHE_KEY}_{user_id}")
         return Response({"detail": "User account deleted."}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -88,8 +90,9 @@ class CurrentUserProfileView(APIView):
 
     def delete(self, request):
         profile = request.user.profile
+        uid = request.user.id
         profile.delete()
-        cache.delete(f"{PROFILE_CACHE_KEY}_{request.user.id}")
+        cache.delete(f"{PROFILE_CACHE_KEY}_{uid}")
         return Response({"detail": "Profile deleted."}, status=status.HTTP_204_NO_CONTENT)
 
 
@@ -128,8 +131,7 @@ class UserViewSet(ModelViewSet):
         self.clear_cache()
 
     def clear_cache(self):
-        for key in cache.keys(f"{USER_CACHE_KEY}*"):
-            cache.delete(key)
+        cache.delete_pattern(f"{USER_CACHE_KEY}*")
 
 
 @extend_schema(tags=["Profiles"])
@@ -138,7 +140,23 @@ class ProfileViewSet(ModelViewSet):
     serializer_class = ProfileSerializer
     permission_classes = [IsAuthenticated, IsAdmin]
     filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['availability']
+    # 'availability' field doesn't exist on Profile; remove it
+    filterset_fields = ['user__username', 'user__email']
+
+    def perform_create(self, serializer):
+        obj = serializer.save()
+        self.clear_cache(obj.user_id)
+        return obj
+
+    def perform_update(self, serializer):
+        obj = serializer.save()
+        self.clear_cache(obj.user_id)
+        return obj
+
+    def perform_destroy(self, instance):
+        uid = instance.user_id
+        instance.delete()
+        self.clear_cache(uid)
 
     def clear_cache(self, user_id):
         cache.delete(f"{PROFILE_CACHE_KEY}_{user_id}")
