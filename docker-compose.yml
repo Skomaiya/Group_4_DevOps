@@ -1,35 +1,32 @@
-# Specify the Docker Compose file version
 version: '3.8'
 
-# Define all the 'services' (containers) your app needs
 services:
-  
-  # --- The Web Application Service ---
   web:
-    # Build the image from the Dockerfile in the current directory (.)
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
     environment:
-      # Database connection settings (must match db service)
       - DB_ENGINE=django.db.backends.postgresql
       - DB_NAME=learnhub_db
       - DB_USER=myuser
       - DB_PASSWORD=mypassword
       - DB_HOST=db
       - DB_PORT=5432
-      # Django settings
       - SECRET_KEY=${SECRET_KEY:-django-insecure-j!5*yrw4*lmd0rnugk%(vmfzosv!e8(mcpv*2ef8^4=jd+xw-z}
       - DEBUG=True
       - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
       - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
-    # This makes the 'web' service wait for the 'db' service 
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; s=socket.socket(); s.connect(('localhost',8000)); s.close()"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  # --- The PostgreSQL Database Service ---
   db:
     image: postgres:15
     environment:
@@ -37,11 +34,14 @@ services:
       - POSTGRES_PASSWORD=mypassword
       - POSTGRES_DB=learnhub_db
     ports:
-      # Expose PostgreSQL port for external connections
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d learnhub_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-# Define the named volume for persistence
 volumes:
   postgres_data:

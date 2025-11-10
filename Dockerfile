@@ -1,34 +1,39 @@
 # Use an official Python runtime as a parent image
 FROM python:3.11-slim
 
-# Set environment variables
-# 1. Prevents Python from writing .pyc files to disk
-# 2. Prevents Python from buffering stdout/stderr
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Security & reliability
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
 
-# Set the initial working directory
+# System deps kept slim; psycopg2-binary avoids compiler toolchain
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+
+# Create app user/group (non-root)
+RUN addgroup --system app && adduser --system --ingroup app app
+
+# Set workdir
 WORKDIR /app
 
-# Install system dependencies (e.g., for postgresql-client)
-RUN apt-get update \
-    && apt-get install -y postgresql-client \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copy the requirements file and install dependencies
-# This is done first to leverage Docker's build cache
+# Install Python deps first (cache layer)
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the entire project into the container
+# Copy project
 COPY . .
 
-# Change working directory to backend where manage.py is located
+# Entrypoint (runs migrations & waits for DB if needed)
+COPY backend/entrypoint.sh /app/backend/entrypoint.sh
+RUN chmod +x /app/backend/entrypoint.sh && chown -R app:app /app
+
+# Switch to non-root
+USER app
+
+# Move to Django project dir
 WORKDIR /app/backend
 
-# Expose the port the app runs on (Django's default)
 EXPOSE 8000
 
-# Run the development server
-# NOTE: Use '0.0.0.0' to make it accessible outside the container
+ENTRYPOINT ["./entrypoint.sh"]
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

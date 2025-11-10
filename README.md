@@ -128,6 +128,18 @@ learnhub/
 └── .dockerignore
 ```
 
+---
+
+## 🧪 CI/CD Status
+
+![CI Pipeline](https://github.com/Skomaiya/Group_4_DevOps/actions/workflows/ci.yml/badge.svg)
+![Build Status](https://img.shields.io/badge/build-passing-brightgreen)
+![Docker](https://img.shields.io/badge/docker-enabled-blue)
+
+> **Note:** Replace `Skomaiya/Group_4_DevOps` with your actual GitHub username/organization and repository name.
+
+---
+
 ## 🐳 Running with Docker Compose
 
 This project is containerized using Docker and Docker Compose for easy local development and deployment.
@@ -145,7 +157,7 @@ This project is containerized using Docker and Docker Compose for easy local dev
    cd Group_4_DevOps
    ```
 
-2. **Start the services:**
+2. **Start all services:**
    ```bash
    docker-compose up --build
    ```
@@ -154,21 +166,105 @@ This project is containerized using Docker and Docker Compose for easy local dev
    - Build the Django backend image
    - Start PostgreSQL database
    - Run database migrations
-   - Start the Django development server
+   - Start the Django development server on port 8000
 
 3. **Access the application:**
-   - Backend API: http://localhost:8000/api
-   - API Documentation: http://localhost:8000/api/schema/swagger-ui/
-   - Admin Panel: http://localhost:8000/admin/
+   - **Backend API:** http://localhost:8000/api
+   - **API Documentation (Swagger):** http://localhost:8000/api/schema/swagger-ui/
+   - **API Documentation (ReDoc):** http://localhost:8000/api/schema/redoc/
+   - **Admin Panel:** http://localhost:8000/admin/
 
-### Docker Compose Commands
+---
+
+## 💻 Local Development (Without Docker)
+
+For development without Docker:
+
+```bash
+# Create and activate virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+
+# Install dependencies
+pip install -r backend/requirements.txt
+
+# Set environment variables
+export DJANGO_SETTINGS_MODULE=learnhub_api.settings
+export SECRET_KEY=your-dev-secret-key
+export DEBUG=True
+
+# Run migrations
+python backend/manage.py migrate
+
+# Create a superuser (optional)
+python backend/manage.py createsuperuser
+
+# Start development server
+python backend/manage.py runserver
+```
+
+The API will be available at http://localhost:8000/api
+
+---
+
+## 🧪 Testing & Code Quality
+
+### Run Linting
+
+Ensure code quality with flake8:
+
+```bash
+# Install flake8 if not already installed
+pip install flake8
+
+# Run linting on the entire project
+flake8 backend/
+
+# Run with specific configuration
+flake8 backend/ --max-line-length=120 --exclude=migrations,__pycache__
+```
+
+### Run Tests
+
+Execute the Django test suite:
+
+```bash
+# Run all tests
+python backend/manage.py test --noinput
+
+# Run tests with coverage
+coverage run --source='backend' backend/manage.py test --noinput
+coverage report
+
+# Run specific test module
+python backend/manage.py test api.tests.test_authentication
+
+# Run tests in Docker
+docker-compose exec web python manage.py test --noinput
+```
+
+### Pre-commit Checklist
+
+Before pushing code, ensure:
+- [ ] All tests pass: `python backend/manage.py test --noinput`
+- [ ] Code passes linting: `flake8 backend/`
+- [ ] Migrations are created: `python backend/manage.py makemigrations --check`
+- [ ] No security issues: `python backend/manage.py check --deploy`
+- [ ] Docker build succeeds: `docker-compose build`
+
+---
+
+## 🔧 Docker Compose Commands
 
 ```bash
 # Start services in detached mode (background)
 docker-compose up -d
 
-# View logs
+# View real-time logs
 docker-compose logs -f
+
+# View logs for specific service
+docker-compose logs -f web
 
 # Stop services
 docker-compose down
@@ -179,56 +275,234 @@ docker-compose down -v
 # Rebuild containers after code changes
 docker-compose up --build
 
+# Restart a specific service
+docker-compose restart web
+
 # Run Django management commands
 docker-compose exec web python manage.py migrate
 docker-compose exec web python manage.py createsuperuser
-docker-compose exec web python manage.py collectstatic
+docker-compose exec web python manage.py collectstatic --noinput
+docker-compose exec web python manage.py shell
+
+# Access PostgreSQL database
+docker-compose exec db psql -U myuser -d learnhub_db
+
+# View running containers
+docker-compose ps
 ```
 
-### Environment Variables
+---
 
-The `docker-compose.yml` file includes default environment variables. For production, create a `.env` file in the project root:
+## 🔐 Environment Variables
+
+Create a `.env` file in the project root for local development:
 
 ```env
-SECRET_KEY=your-secret-key-here
-DEBUG=False
-ALLOWED_HOSTS=your-domain.com
+# Django Settings
+SECRET_KEY=your-secret-key-here-minimum-50-characters
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
+
+# Database Configuration
 DB_ENGINE=django.db.backends.postgresql
 DB_NAME=learnhub_db
 DB_USER=myuser
 DB_PASSWORD=your-secure-password
 DB_HOST=db
 DB_PORT=5432
+
+# JWT Settings
+JWT_EXPIRATION_HOURS=24
+
+# Email Configuration (optional)
+EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
 ```
 
-### Database Migrations
+> **Security Note:** Never commit `.env` files to version control. The `.env` file is included in `.gitignore`.
 
-After starting the containers for the first time, run migrations:
+---
+
+## 🚀 CI/CD Pipeline
+
+Our GitHub Actions workflow automatically:
+
+1. **Linting:** Runs flake8 to check code quality
+2. **Testing:** Executes all Django tests
+3. **Docker Build:** Validates Dockerfile and builds images
+4. **Security Checks:** Runs Django security checks
+5. **Deployment:** (Coming soon) Auto-deploy to production on merge to `main`
+
+### Trigger CI Pipeline
+
+The pipeline runs automatically on:
+- Push to `main` or `develop` branches
+- Pull requests to `main`
+- Manual workflow dispatch
+
+### View Pipeline Status
+
+Check the status of your CI/CD pipeline:
+- Visit: https://github.com/Skomaiya/Group_4_DevOps/actions
+- Look for the green checkmark ✅ or red X ❌
+
+---
+
+## 🗄️ Database Migrations
+
+### Create New Migrations
+
+After modifying models:
 
 ```bash
+# Using Docker
+docker-compose exec web python manage.py makemigrations
+
+# Without Docker
+python backend/manage.py makemigrations
+```
+
+### Apply Migrations
+
+```bash
+# Using Docker
+docker-compose exec web python manage.py migrate
+
+# Without Docker
+python backend/manage.py migrate
+```
+
+### View Migration Status
+
+```bash
+docker-compose exec web python manage.py showmigrations
+```
+
+---
+
+## 🔍 Troubleshooting
+
+### Port Already in Use
+
+If port 8000 is already in use:
+
+```bash
+# Option 1: Stop the conflicting process
+lsof -ti:8000 | xargs kill -9  # macOS/Linux
+netstat -ano | findstr :8000   # Windows
+
+# Option 2: Change port in docker-compose.yml
+ports:
+  - "8001:8000"  # Use port 8001 instead
+```
+
+### Database Connection Issues
+
+```bash
+# Recreate database container
+docker-compose down -v
+docker-compose up -d db
 docker-compose exec web python manage.py migrate
 ```
 
-### Creating a Superuser
-
-To access the Django admin panel:
+### Container Build Failures
 
 ```bash
-docker-compose exec web python manage.py createsuperuser
+# Clear Docker cache and rebuild
+docker-compose down
+docker system prune -af
+docker-compose build --no-cache
+docker-compose up
 ```
 
-### Dockerfile Features
+### Permission Errors
 
-- **Base Image:** `python:3.11-slim` for a lightweight container
-- **Security:** Runs as non-root user (`appuser`)
-- **Optimization:** Multi-stage build cache for faster rebuilds
-- **PostgreSQL Client:** Included for database connections
-
-### Troubleshooting
-
-**Port already in use:**
 ```bash
-# Change the port mapping in docker-compose.yml
-ports:
-  - "8000:8000"
+# Fix file permissions (Linux/macOS)
+sudo chown -R $USER:$USER .
+
+# Run as root in container (not recommended for production)
+docker-compose exec --user root web bash
 ```
+
+---
+
+## 📚 Additional Resources
+
+- [Django Documentation](https://docs.djangoproject.com/)
+- [Django REST Framework](https://www.django-rest-framework.org/)
+- [Docker Documentation](https://docs.docker.com/)
+- [GitHub Actions Documentation](https://docs.github.com/en/actions)
+
+---
+
+## 📝 DevOps Evidence Checklist
+
+Use this checklist to track your DevOps implementation progress:
+
+- [ ] **Version Control**
+  - [ ] Repository initialized with meaningful commits
+  - [ ] `.gitignore` configured properly
+  - [ ] Branch protection rules enabled on `main`
+
+- [ ] **Containerization**
+  - [ ] Dockerfile created and optimized
+  - [ ] docker-compose.yml configured
+  - [ ] Multi-stage builds implemented (if applicable)
+  - [ ] Non-root user configured in container
+
+- [ ] **CI/CD Pipeline**
+  - [ ] GitHub Actions workflow file created
+  - [ ] Automated testing on push/PR
+  - [ ] Linting integrated
+  - [ ] Build status badge in README
+
+- [ ] **Testing**
+  - [ ] Unit tests written for models
+  - [ ] API endpoint tests implemented
+  - [ ] Test coverage > 70%
+  - [ ] Tests run in CI pipeline
+
+- [ ] **Security**
+  - [ ] Secrets managed via environment variables
+  - [ ] `.env` file in `.gitignore`
+  - [ ] Django security checks pass
+  - [ ] Dependencies scanned for vulnerabilities
+
+- [ ] **Documentation**
+  - [ ] README with setup instructions
+  - [ ] API documentation (Swagger/ReDoc)
+  - [ ] Code comments where necessary
+  - [ ] Architecture diagram
+
+- [ ] **Deployment**
+  - [ ] Application deployed to cloud platform
+  - [ ] Environment variables configured in production
+  - [ ] Database migrations run successfully
+  - [ ] Health checks implemented
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature/your-feature-name`
+3. Make your changes and commit: `git commit -m "Add your feature"`
+4. Push to your branch: `git push origin feature/your-feature-name`
+5. Open a Pull Request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## 👨‍💻 Team Contact
+
+For questions or support, reach out to the team:
+- **Patrick Mukunzi** - Frontend Development
+- **Samuel Komaiya** - Backend Development
+- **Plamedi Mayala** - Backend Development
+
+**Repository:** https://github.com/Skomaiya/Group_4_DevOps

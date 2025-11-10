@@ -1,3 +1,13 @@
 [flake8]
-exclude = .git, __pycache__, build, dist, migrations
+exclude = 
+    .venv,
+    venv,
+    env,
+    __pycache__,
+    .git,
+    .pytest_cache,
+    node_modules,
+    migrations,
+    */migrations/*,
 max-line-length = 120
+max-complexity = 10
