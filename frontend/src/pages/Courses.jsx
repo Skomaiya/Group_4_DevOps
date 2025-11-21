@@ -9,7 +9,7 @@ export default function Courses() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
-  const [selectedDifficulty, setSelectedDifficulty] = useState("all");
+  const [selectedLevel, setSelectedLevel] = useState("all");
 
   useEffect(() => {
     (async () => {
@@ -44,22 +44,22 @@ export default function Courses() {
       );
     }
 
-    // Difficulty filter
-    if (selectedDifficulty !== "all") {
+    // Level filter (backend uses lowercase: beginner/intermediate/advanced)
+    if (selectedLevel !== "all") {
       filtered = filtered.filter(
-        (course) => course.difficulty === selectedDifficulty
+        (course) => course.level === selectedLevel.toLowerCase()
       );
     }
 
     setFilteredCourses(filtered);
-  }, [searchTerm, selectedCategory, selectedDifficulty, courses]);
+  }, [searchTerm, selectedCategory, selectedLevel, courses]);
 
   // Extract unique categories from courses
   const categories = [
     "all",
     ...new Set(courses.map((c) => c.category).filter(Boolean)),
   ];
-  const difficulties = ["all", "Beginner", "Intermediate", "Advanced"];
+  const levels = ["all", "Beginner", "Intermediate", "Advanced"];
 
   if (loading) return <LoadingSpinner size="large" text="Loading courses..." />;
 
@@ -84,7 +84,7 @@ export default function Courses() {
               placeholder="Search courses..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             />
           </div>
 
@@ -96,7 +96,7 @@ export default function Courses() {
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             >
               {categories.map((cat) => (
                 <option key={cat} value={cat}>
@@ -106,19 +106,19 @@ export default function Courses() {
             </select>
           </div>
 
-          {/* Difficulty Filter */}
+          {/* Level Filter */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              Difficulty
+              Level
             </label>
             <select
-              value={selectedDifficulty}
-              onChange={(e) => setSelectedDifficulty(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              value={selectedLevel}
+              onChange={(e) => setSelectedLevel(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
             >
-              {difficulties.map((diff) => (
-                <option key={diff} value={diff}>
-                  {diff.charAt(0).toUpperCase() + diff.slice(1)}
+              {levels.map((level) => (
+                <option key={level} value={level}>
+                  {level.charAt(0).toUpperCase() + level.slice(1)}
                 </option>
               ))}
             </select>
@@ -143,9 +143,9 @@ export default function Courses() {
             onClick={() => {
               setSearchTerm("");
               setSelectedCategory("all");
-              setSelectedDifficulty("all");
+              setSelectedLevel("all");
             }}
-            className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700"
+            className="mt-4 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
           >
             Clear Filters
           </button>

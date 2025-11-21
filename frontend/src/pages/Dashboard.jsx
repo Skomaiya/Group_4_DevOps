@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useAuthStore } from "../store/authStore";
-import { fetchCourses } from "../api/courseApi";
+import { fetchCourses, fetchEnrollments } from "../api/courseApi";
 import { Link } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Dashboard() {
   const user = useAuthStore((s) => s.user);
   const [courses, setCourses] = useState([]);
+  const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     enrolledCourses: 0,
@@ -18,18 +19,41 @@ export default function Dashboard() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetchCourses();
-        setCourses(res.data.slice(0, 3)); // Get first 3 courses
+        // Fetch enrollments from backend
+        const enrollmentsRes = await fetchEnrollments();
+        const userEnrollments = enrollmentsRes.data || [];
+        setEnrollments(userEnrollments);
 
-        // Mock stats - in real app, fetch from backend
+        // Fetch courses for "continue learning" section
+        const coursesRes = await fetchCourses();
+        setCourses(coursesRes.data.slice(0, 3));
+
+        // Calculate stats from enrollments
+        const completed = userEnrollments.filter(
+          (e) => e.status === "completed"
+        ).length;
+        const inProgress = userEnrollments.filter(
+          (e) => e.status === "active"
+        ).length;
+        const totalHours = userEnrollments.reduce((sum, e) => {
+          return sum + (e.course?.duration_hours || 0);
+        }, 0);
+
         setStats({
-          enrolledCourses: res.data.length || 0,
-          completedCourses: Math.floor((res.data.length || 0) * 0.3),
-          inProgressCourses: Math.floor((res.data.length || 0) * 0.5),
-          totalHours: (res.data.length || 0) * 12,
+          enrolledCourses: userEnrollments.length,
+          completedCourses: completed,
+          inProgressCourses: inProgress,
+          totalHours: Math.round(totalHours),
         });
       } catch (e) {
         console.error("Failed to fetch dashboard data:", e);
+        // Fallback to mock data if API fails
+        setStats({
+          enrolledCourses: 0,
+          completedCourses: 0,
+          inProgressCourses: 0,
+          totalHours: 0,
+        });
       }
       setLoading(false);
     })();
@@ -165,7 +189,7 @@ export default function Dashboard() {
           </h2>
           <Link
             to="/courses"
-            className="text-indigo-600 hover:text-indigo-700 text-sm font-medium"
+            className="text-purple-600 hover:text-purple-700 text-sm font-medium"
           >
             View all courses →
           </Link>
@@ -178,7 +202,7 @@ export default function Dashboard() {
             </p>
             <Link
               to="/courses"
-              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 inline-block"
+              className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 inline-block"
             >
               Browse Courses
             </Link>
@@ -200,7 +224,7 @@ export default function Dashboard() {
                 {/* Progress bar */}
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-indigo-600 h-2 rounded-full"
+                    className="bg-purple-600 h-2 rounded-full"
                     style={{ width: `${Math.random() * 100}%` }}
                   ></div>
                 </div>
@@ -221,9 +245,9 @@ export default function Dashboard() {
               to="/courses"
               className="flex items-center p-3 hover:bg-gray-50 rounded-lg transition-colors"
             >
-              <div className="bg-indigo-100 rounded-lg p-2 mr-3">
+              <div className="bg-purple-100 rounded-lg p-2 mr-3">
                 <svg
-                  className="w-5 h-5 text-indigo-600"
+                  className="w-5 h-5 text-purple-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -267,7 +291,7 @@ export default function Dashboard() {
             Learning Streak
           </h3>
           <div className="text-center py-4">
-            <p className="text-5xl font-bold text-indigo-600">7</p>
+            <p className="text-5xl font-bold text-purple-600">7</p>
             <p className="text-gray-600 mt-2">Days in a row</p>
             <p className="text-sm text-gray-500 mt-4">Keep it up! 🔥</p>
           </div>

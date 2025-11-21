@@ -6,7 +6,7 @@ interface Toast {
   type: "success" | "error" | "info" | "warning";
 }
 
-export function useToast() {
+export default function useToast() {
   const [toasts, setToasts] = useState<Toast[]>([]);
 
   const showToast = useCallback(

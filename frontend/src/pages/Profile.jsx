@@ -1,42 +1,69 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuthStore } from "../store/authStore";
+import { fetchProfile, updateProfile } from "../api/authApi";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function Profile() {
   const user = useAuthStore((s) => s.user);
   const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [profile, setProfile] = useState(null);
   const [formData, setFormData] = useState({
-    username: user?.username || "",
-    email: user?.email || "",
-    first_name: user?.first_name || "",
-    last_name: user?.last_name || "",
-    bio: user?.bio || "",
+    bio: "",
+    expertise: "",
+    credentials: "",
   });
   const [message, setMessage] = useState("");
 
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      const res = await fetchProfile();
+      setProfile(res.data);
+      setFormData({
+        bio: res.data.bio || "",
+        expertise: res.data.expertise || "",
+        credentials: res.data.credentials || "",
+      });
+    } catch (e) {
+      console.error("Failed to fetch profile:", e);
+    }
+    setLoading(false);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Implement profile update API call
-    setMessage("Profile updated successfully!");
-    setIsEditing(false);
-    setTimeout(() => setMessage(""), 3000);
+    try {
+      await updateProfile(formData);
+      setMessage("Profile updated successfully!");
+      setIsEditing(false);
+      loadProfile(); // Reload profile data
+      setTimeout(() => setMessage(""), 3000);
+    } catch (err) {
+      setMessage("Failed to update profile");
+      setTimeout(() => setMessage(""), 3000);
+    }
   };
 
   const handleCancel = () => {
     setFormData({
-      username: user?.username || "",
-      email: user?.email || "",
-      first_name: user?.first_name || "",
-      last_name: user?.last_name || "",
-      bio: user?.bio || "",
+      bio: profile?.bio || "",
+      expertise: profile?.expertise || "",
+      credentials: profile?.credentials || "",
     });
     setIsEditing(false);
   };
+
+  if (loading) return <LoadingSpinner size="large" text="Loading profile..." />;
 
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <div className="bg-white rounded-lg shadow">
         {/* Header */}
-        <div className="bg-linear-to-r from-indigo-500 to-purple-600 h-32 rounded-t-lg"></div>
+        <div className="bg-linear-to-r from-purple-500 to-purple-600 h-32 rounded-t-lg"></div>
 
         {/* Profile Content */}
         <div className="px-6 pb-6">
@@ -56,7 +83,7 @@ export default function Profile() {
             {!isEditing && (
               <button
                 onClick={() => setIsEditing(true)}
-                className="ml-auto mt-16 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                className="ml-auto mt-16 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
               >
                 Edit Profile
               </button>
@@ -73,64 +100,6 @@ export default function Profile() {
           {/* Profile Form */}
           {isEditing ? (
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Username
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.username}
-                    onChange={(e) =>
-                      setFormData({ ...formData, username: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) =>
-                      setFormData({ ...formData, email: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    First Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.first_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, first_name: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Last Name
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.last_name}
-                    onChange={(e) =>
-                      setFormData({ ...formData, last_name: e.target.value })
-                    }
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                  />
-                </div>
-              </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Bio
@@ -141,15 +110,45 @@ export default function Profile() {
                     setFormData({ ...formData, bio: e.target.value })
                   }
                   rows="4"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                   placeholder="Tell us about yourself..."
                 ></textarea>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Expertise
+                </label>
+                <input
+                  type="text"
+                  value={formData.expertise}
+                  onChange={(e) =>
+                    setFormData({ ...formData, expertise: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="e.g., Web Development, Data Science"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Credentials
+                </label>
+                <input
+                  type="text"
+                  value={formData.credentials}
+                  onChange={(e) =>
+                    setFormData({ ...formData, credentials: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                  placeholder="e.g., BSc Computer Science, AWS Certified"
+                />
               </div>
 
               <div className="flex gap-3">
                 <button
                   type="submit"
-                  className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="px-6 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
                 >
                   Save Changes
                 </button>
@@ -194,11 +193,33 @@ export default function Profile() {
                       {user?.last_name || "Not set"}
                     </p>
                   </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Role</p>
+                    <p className="text-gray-800 font-medium">
+                      {user?.role || "student"}
+                    </p>
+                  </div>
+                  {profile?.expertise && (
+                    <div>
+                      <p className="text-sm text-gray-500">Expertise</p>
+                      <p className="text-gray-800 font-medium">
+                        {profile.expertise}
+                      </p>
+                    </div>
+                  )}
+                  {profile?.credentials && (
+                    <div className="md:col-span-2">
+                      <p className="text-sm text-gray-500">Credentials</p>
+                      <p className="text-gray-800 font-medium">
+                        {profile.credentials}
+                      </p>
+                    </div>
+                  )}
                 </div>
-                {user?.bio && (
+                {profile?.bio && (
                   <div className="mt-4">
                     <p className="text-sm text-gray-500">Bio</p>
-                    <p className="text-gray-800">{user.bio}</p>
+                    <p className="text-gray-800">{profile.bio}</p>
                   </div>
                 )}
               </div>
