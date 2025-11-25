@@ -1,0 +1,19 @@
+# --- Docker ---
+Dockerfile
+.dockerignore
+
+# --- Git ---
+.gitignore
+
+# --- Python Virtual Environment ---
+venv/
+env/
+.venv/
+my_env/
+
+# --- Python Cache ---
+__pycache__/
+*.pyc
+
+# --- Secrets & Local Config ---
+.env

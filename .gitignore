@@ -1,0 +1,227 @@
+# ============================================
+# PYTHON / DJANGO BACKEND
+# ============================================
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+.python-version
+
+# Django specific
+*.log
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+
+# ============================================
+# ENVIRONMENT VARIABLES & SECRETS
+# ============================================
+
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+.env.*
+!.env.example
+
+# Configuration files with secrets
+config.local.yml
+secrets.yml
+*.key
+*.pem
+*.crt
+*.cer
+*.p12
+
+# API keys and credentials
+credentials.json
+service-account.json
+google-credentials.json
+
+# ============================================
+# IDE / EDITOR FILES
+# ============================================
+
+# Visual Studio Code
+.vscode/
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+# JetBrains IDEs (PyCharm, WebStorm, IntelliJ)
+.idea/
+*.iml
+*.iws
+.idea_modules/
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vim/
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+
+# ============================================
+# OPERATING SYSTEM FILES
+# ============================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+.Trash-*
+
+# ============================================
+# DEVOPS & DEPLOYMENT
+# ============================================
+
+# Docker
+*.log
+.dockerignore.bak
+
+# Terraform
+*.tfstate
+*.tfstate.*
+*.tfvars
+.terraform/
+.terraform.lock.hcl
+
+# Kubernetes
+*.kubeconfig
+
+# CI/CD
+.github/workflows/*.log
+
+# ============================================
+# TESTING & COVERAGE
+# ============================================
+
+# Python testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+coverage.xml
+*.cover
+.hypothesis/
+
+# JavaScript testing
+coverage/
+.nyc_output/
+
+# ============================================
+# BUILD ARTIFACTS & TEMPORARY FILES
+# ============================================
+
+# Compiled files
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.dylib
+
+# Package files
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.whl
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+.cache/
+temp/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ============================================
+# DATABASE FILES (Local development)
+# ============================================
+
+*.sqlite
+*.sqlite3
+*.db
+
+# PostgreSQL
+*.dump
+*.sql
+
+# ============================================
+# DOCUMENTATION BUILD
+# ============================================
+
+# Sphinx documentation
+docs/_build/
+site/
+
+# ============================================
+# MISC
+# ============================================
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Archive files
+*.zip
+*.tar.gz
+*.rar
