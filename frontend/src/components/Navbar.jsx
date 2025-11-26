@@ -20,6 +20,10 @@ return (
 {user ? (
 <>
 <Link to="/dashboard" className="hover:underline">Dashboard</Link>
+{user.role === 'instructor' && (
+<Link to="/courses/create" className="hover:underline">Create Course</Link>
+)}
+<Link to="/profile" className="hover:underline">Profile</Link>
 <button onClick={onLogout} className="ml-2 px-3 py-1 rounded border">Logout</button>
 </>
 ) : (
