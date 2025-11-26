@@ -8,6 +8,10 @@ export default function Register() {
     email: "",
     password: "",
     confirmPassword: "",
+    phone_number: "",
+    role: "student",
+    country: "",
+    city: "",
   });
   const [err, setErr] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -22,7 +26,10 @@ export default function Register() {
       !form.username ||
       !form.email ||
       !form.password ||
-      !form.confirmPassword
+      !form.confirmPassword ||
+      !form.phone_number ||
+      !form.country ||
+      !form.city
     ) {
       setErr("Please fill in all fields");
       return;
@@ -44,6 +51,10 @@ export default function Register() {
         username: form.username,
         email: form.email,
         password: form.password,
+        phone_number: form.phone_number,
+        role: form.role,
+        country: form.country,
+        city: form.city,
       });
       navigate("/login");
     } catch (e) {
@@ -86,7 +97,9 @@ export default function Register() {
                   name="username"
                   type="text"
                   value={form.username}
-                  onChange={(e) => setForm({ ...form, username: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, username: e.target.value })
+                  }
                   className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                   placeholder="Choose a username"
                 />
@@ -112,6 +125,85 @@ export default function Register() {
 
               <div>
                 <label
+                  htmlFor="phone_number"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Phone Number
+                </label>
+                <input
+                  id="phone_number"
+                  name="phone_number"
+                  type="tel"
+                  value={form.phone_number}
+                  onChange={(e) =>
+                    setForm({ ...form, phone_number: e.target.value })
+                  }
+                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                  placeholder="Enter your phone number"
+                />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="role"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  I am a
+                </label>
+                <select
+                  id="role"
+                  name="role"
+                  value={form.role}
+                  onChange={(e) => setForm({ ...form, role: e.target.value })}
+                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                >
+                  <option value="student">Student</option>
+                  <option value="instructor">Instructor</option>
+                </select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="country"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Country
+                  </label>
+                  <input
+                    id="country"
+                    name="country"
+                    type="text"
+                    value={form.country}
+                    onChange={(e) =>
+                      setForm({ ...form, country: e.target.value })
+                    }
+                    className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                    placeholder="Your country"
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="city"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    City
+                  </label>
+                  <input
+                    id="city"
+                    name="city"
+                    type="text"
+                    value={form.city}
+                    onChange={(e) => setForm({ ...form, city: e.target.value })}
+                    className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                    placeholder="Your city"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label
                   htmlFor="password"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
@@ -122,7 +214,9 @@ export default function Register() {
                   name="password"
                   type="password"
                   value={form.password}
-                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, password: e.target.value })
+                  }
                   className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                   placeholder="Create a password"
                 />
@@ -196,7 +290,7 @@ export default function Register() {
 
             <div className="text-center">
               <p className="text-sm text-gray-600">
-                Already have an account?{' '}
+                Already have an account?{" "}
                 <Link
                   to="/login"
                   className="font-medium text-purple-600 hover:text-purple-500"
@@ -221,40 +315,77 @@ export default function Register() {
         <div className="relative z-10 text-white max-w-md">
           <h1 className="text-5xl font-bold mb-6">Join LearnHub</h1>
           <p className="text-xl mb-8 text-purple-100">
-            Start your learning journey today and join thousands of successful students
+            Start your learning journey today and join thousands of successful
+            students
           </p>
           <div className="space-y-4">
             <div className="flex items-center">
               <div className="bg-white bg-opacity-20 rounded-lg p-3 mr-4">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
                 </svg>
               </div>
               <div>
                 <h3 className="font-semibold text-lg">Quick Setup</h3>
-                <p className="text-purple-100 text-sm">Get started in under 2 minutes</p>
+                <p className="text-purple-100 text-sm">
+                  Get started in under 2 minutes
+                </p>
               </div>
             </div>
             <div className="flex items-center">
               <div className="bg-white bg-opacity-20 rounded-lg p-3 mr-4">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
                 </svg>
               </div>
               <div>
                 <h3 className="font-semibold text-lg">Secure & Private</h3>
-                <p className="text-purple-100 text-sm">Your data is protected</p>
+                <p className="text-purple-100 text-sm">
+                  Your data is protected
+                </p>
               </div>
             </div>
             <div className="flex items-center">
               <div className="bg-white bg-opacity-20 rounded-lg p-3 mr-4">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"
+                  />
                 </svg>
               </div>
               <div>
                 <h3 className="font-semibold text-lg">Free to Start</h3>
-                <p className="text-purple-100 text-sm">No credit card required</p>
+                <p className="text-purple-100 text-sm">
+                  No credit card required
+                </p>
               </div>
             </div>
           </div>
