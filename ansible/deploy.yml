@@ -1,0 +1,197 @@
+---
+- name: Deploy Group 4 DevOps Application to Production
+  hosts: app_server
+  become: yes
+  
+  vars:
+    app_dir: "/opt/group4devops"
+    project_name: "group4devops"
+    acr_login_server: "{{ lookup('env', 'ACR_LOGIN_SERVER') }}"
+    acr_username: "{{ lookup('env', 'ACR_USERNAME') }}"
+    acr_password: "{{ lookup('env', 'ACR_PASSWORD') }}"
+    image_tag: "{{ lookup('env', 'IMAGE_TAG') | default('latest') }}"
+    db_host: "{{ lookup('env', 'DB_HOST') }}"
+    db_name: "{{ lookup('env', 'DB_NAME') | default('group4devops_db') }}"
+    db_user: "{{ lookup('env', 'DB_USER') | default('dbadmin') }}"
+    db_password: "{{ lookup('env', 'DB_PASSWORD') }}"
+    secret_key: "{{ lookup('env', 'SECRET_KEY') | default('change-this-in-production-' + 99999999 | random | string) }}"
+    debug: "{{ lookup('env', 'DEBUG') | default('False') }}"
+    allowed_hosts: "{{ lookup('env', 'ALLOWED_HOSTS') | default('*') }}"
+
+  tasks:
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+
+    - name: Install required system packages
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg
+          - lsb-release
+          - git
+          - python3-pip
+        state: present
+
+    # Task 1: Install Docker
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+        state: present
+
+    - name: Install Docker packages
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        state: present
+        update_cache: yes
+
+    - name: Start and enable Docker service
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Install Docker Compose
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/v2.24.0/docker-compose-linux-x86_64"
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    - name: Install Docker Python module (for Ansible docker modules)
+      pip:
+        name: 
+          - docker
+          - docker-compose
+        state: present
+
+    - name: Add azureuser to docker group
+      user:
+        name: azureuser
+        groups: docker
+        append: yes
+
+    - name: Reset SSH connection to allow group changes to take effect
+      meta: reset_connection
+
+    # Task 2: Create application directory
+    - name: Create application directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: azureuser
+        group: azureuser
+        mode: '0755'
+
+    # Task 3: Authenticate to Azure Container Registry
+    - name: Login to Azure Container Registry
+      docker_login:
+        registry_url: "{{ acr_login_server }}"
+        username: "{{ acr_username }}"
+        password: "{{ acr_password }}"
+        reauthorize: yes
+      become_user: azureuser
+      environment:
+        HOME: "/home/azureuser"
+
+    # Task 4: Pull latest Docker images
+    - name: Pull backend Docker image from ACR
+      docker_image:
+        name: "{{ acr_login_server }}/{{ project_name }}-backend"
+        tag: "{{ image_tag }}"
+        source: pull
+        state: present
+      become_user: azureuser
+      environment:
+        HOME: "/home/azureuser"
+
+    - name: Pull frontend Docker image from ACR
+      docker_image:
+        name: "{{ acr_login_server }}/{{ project_name }}-frontend"
+        tag: "{{ image_tag }}"
+        source: pull
+        state: present
+      become_user: azureuser
+      environment:
+        HOME: "/home/azureuser"
+
+    - name: Create docker-compose.yml from template
+      template:
+        src: docker-compose.yml.j2
+        dest: "{{ app_dir }}/docker-compose.yml"
+        owner: azureuser
+        group: azureuser
+        mode: '0644'
+
+    # Task 5: Deploy/restart application with docker-compose
+    - name: Stop existing containers (if any)
+      command: docker-compose down
+      args:
+        chdir: "{{ app_dir }}"
+      become_user: azureuser
+      environment:
+        HOME: "/home/azureuser"
+      ignore_errors: yes
+
+    - name: Deploy application with docker-compose up -d
+      command: docker-compose up -d --remove-orphans
+      args:
+        chdir: "{{ app_dir }}"
+      become_user: azureuser
+      environment:
+        HOME: "/home/azureuser"
+
+    - name: Wait for backend to be ready
+      wait_for:
+        port: 8000
+        host: localhost
+        delay: 10
+        timeout: 120
+        state: started
+
+    - name: Wait for frontend to be ready
+      wait_for:
+        port: 80
+        host: localhost
+        delay: 5
+        timeout: 60
+        state: started
+
+    - name: Show running containers
+      command: docker ps
+      become_user: azureuser
+      register: container_status
+
+    - name: Display container status
+      debug:
+        var: container_status.stdout_lines
+
+    - name: Get container logs (last 20 lines)
+      shell: docker-compose logs --tail=20
+      args:
+        chdir: "{{ app_dir }}"
+      become_user: azureuser
+      register: container_logs
+      ignore_errors: yes
+
+    - name: Display container logs
+      debug:
+        var: container_logs.stdout_lines
+      when: container_logs is defined
+
+    - name: Display deployment success message
+      debug:
+        msg: 
+          - "Deployment completed successfully!"
+          - "Backend accessible at: http://{{ ansible_host }}:8000"
+          - "Frontend accessible at: http://{{ ansible_host }}:80"

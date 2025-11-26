@@ -17,3 +17,5 @@ __pycache__/
 
 # --- Secrets & Local Config ---
 .env
+
+./terraform-outputs.json
