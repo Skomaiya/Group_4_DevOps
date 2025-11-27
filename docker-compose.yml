@@ -1,6 +1,45 @@
 version: '3.8'
 
 services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      # Database - Azure PostgreSQL
+      - DB_ENGINE=django.db.backends.postgresql
+      - DB_NAME=${DB_NAME:-group4devops_db}
+      - DB_USER=${DB_USER:-dbadmin}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST:-group4devops-prod-db.postgres.database.azure.com}
+      - DB_PORT=${DB_PORT:-5432}
+      
+      # Django settings
+      - SECRET_KEY=${SECRET_KEY:-django-insecure-local-dev-only-key}
+      - DEBUG=${DEBUG:-True}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0,40.120.26.21}
+      
+      # CORS
+      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173,http://40.120.26.21:8000}
+    
+    volumes:
+      - ./backend:/app
+      - /app/staticfiles
+    
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/health/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+
   frontend:
     build:
       context: ./frontend
@@ -8,55 +47,11 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_BASE_URL=http://localhost:8000
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost:8000}
     depends_on:
-      - web
+      backend:
+        condition: service_healthy
     volumes:
       - ./frontend:/app
       - /app/node_modules
     command: npm run dev -- --host 0.0.0.0
-
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
-    environment:
-      - DB_ENGINE=django.db.backends.postgresql
-      - DB_NAME=learnhub_db
-      - DB_USER=myuser
-      - DB_PASSWORD=mypassword
-      - DB_HOST=db
-      - DB_PORT=5432
-      - SECRET_KEY=${SECRET_KEY:-django-insecure-j!5*yrw4*lmd0rnugk%(vmfzosv!e8(mcpv*2ef8^4=jd+xw-z}
-      - DEBUG=True
-      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0
-      - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
-    depends_on:
-      db:
-        condition: service_healthy
-    healthcheck:
-      test: ["CMD", "python", "-c", "import socket; s=socket.socket(); s.connect(('localhost',8000)); s.close()"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  db:
-    image: postgres:15
-    environment:
-      - POSTGRES_USER=myuser
-      - POSTGRES_PASSWORD=mypassword
-      - POSTGRES_DB=learnhub_db
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U myuser -d learnhub_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-volumes:
-  postgres_data:
