@@ -60,7 +60,7 @@ class CourseCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Set instructor to the current user
         validated_data['instructor'] = self.context['request'].user
-        
+
         # Auto-generate slug if not provided
         if not validated_data.get('slug'):
             base_slug = slugify(validated_data['title'])
@@ -71,7 +71,7 @@ class CourseCreateSerializer(serializers.ModelSerializer):
                 slug = f"{base_slug}-{counter}"
                 counter += 1
             validated_data['slug'] = slug
-        
+
         return super().create(validated_data)
 
 
@@ -116,7 +116,7 @@ class EnrollmentCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Set student to the current user
         validated_data['student'] = self.context['request'].user
-        
+
         # Set default status if not provided
         if 'status' not in validated_data:
             validated_data['status'] = 'active'

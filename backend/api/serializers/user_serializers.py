@@ -28,7 +28,7 @@ class UserSerializer(serializers.ModelSerializer):
             'is_verified', 'created_at', 'updated_at', 'date_joined', 'profile'
         ]
         read_only_fields = ['is_active', 'is_verified', 'created_at', 'updated_at', 'date_joined']
-    
+
     def to_representation(self, instance):
         """Override to handle cases where profile might not exist"""
         representation = super().to_representation(instance)
@@ -117,11 +117,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     Maps 'email' field from request to 'username' field for parent authentication.
     """
     email = serializers.EmailField(required=False, allow_blank=True)
-    
+
     def validate(self, attrs):
         # Get email from request (frontend sends 'email' field)
         email = attrs.get('email', '')
-        
+
         if email:
             # Map email to username field (since USERNAME_FIELD is 'email')
             attrs['username'] = email
@@ -129,11 +129,11 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
             # If username is provided (backward compatibility), use it as email
             # This handles cases where username might be sent instead
             attrs['username'] = attrs.get('username', '')
-        
+
         # Call parent validate which will authenticate using email (USERNAME_FIELD)
         # This will raise ValidationError if credentials are invalid
         data = super().validate(attrs)
-        
+
         user_data = {
             "id": self.user.id,
             "email": self.user.email,
