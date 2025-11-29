@@ -52,7 +52,9 @@ jobs:
 
       - name: Install tfsec
         run: |
-          curl -s https://raw.githubusercontent.com/aquasecurity/tfsec/master/scripts/install.sh | bash
+          wget https://github.com/aquasecurity/tfsec/releases/latest/download/tfsec-linux-amd64 -O tfsec
+          chmod +x tfsec
+          sudo mv tfsec /usr/local/bin/tfsec
 
       - name: Run tfsec
         run: tfsec terraform/
@@ -116,7 +118,7 @@ jobs:
           chmod 600 ssh_key
 
       # ----------------------------------------
-      # Generate Ansible inventory
+      # Generate Ansible Inventory
       # ----------------------------------------
       - name: Generate Ansible Inventory
         run: |
