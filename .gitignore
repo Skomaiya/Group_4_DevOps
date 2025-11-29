@@ -227,3 +227,8 @@ site/
 *.zip
 *.tar.gz
 *.rar
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
