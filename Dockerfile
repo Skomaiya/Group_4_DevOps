@@ -16,9 +16,8 @@ RUN addgroup --system app && adduser --system --ingroup app app
 # Set workdir
 WORKDIR /app
 
-# Install Python deps first (cache layer)
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# no backend install needed in root image
+RUN echo "Root Dockerfile unused for backend/frontend build"
 
 # Copy project
 COPY . .
