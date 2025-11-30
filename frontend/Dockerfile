@@ -1,21 +1,23 @@
-# Frontend Dockerfile for LearnHub
-FROM node:20-alpine
-
-# Set working directory
+# ---- BUILD STAGE ----
+FROM node:20-alpine AS build
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-
 # Install dependencies
+COPY package*.json ./
 RUN npm ci
 
-# Copy project files
+# Build the frontend
 COPY . .
+RUN npm run build
 
-# Expose Vite dev server port
-EXPOSE 5173
+# ---- PRODUCTION STAGE ----
+FROM nginx:alpine
 
-# Start development server with host binding for Docker
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# Copy built files
+COPY --from=build /app/dist /usr/share/nginx/html
 
+# Expose production port
+EXPOSE 3000
+
+# Start Nginx
+CMD ["nginx", "-g", "daemon off;"]

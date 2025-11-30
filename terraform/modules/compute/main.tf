@@ -1,4 +1,7 @@
-# Public IP for Bastion Host
+############################################
+# PUBLIC IP FOR BASTION ONLY
+############################################
+
 resource "azurerm_public_ip" "bastion" {
   name                = "${var.project_name}-${var.environment}-bastion-pip"
   location            = var.location
@@ -8,17 +11,18 @@ resource "azurerm_public_ip" "bastion" {
   tags                = var.tags
 }
 
-# Public IP for Application VM (temporary for testing)
-resource "azurerm_public_ip" "app" {
-  name                = "${var.project_name}-${var.environment}-app-pip"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  allocation_method   = "Static"
-  sku                 = "Standard"
-  tags                = var.tags
-}
+############################################
+# REMOVE PUBLIC IP FOR APPLICATION VM
+# (PRIVATE VM MUST NOT HAVE PUBLIC IP)
+############################################
 
-# Network Interface for Bastion
+# ❌ This is removed:
+# resource "azurerm_public_ip" "app" {...}
+
+############################################
+# NETWORK INTERFACE FOR BASTION
+############################################
+
 resource "azurerm_network_interface" "bastion" {
   name                = "${var.project_name}-${var.environment}-bastion-nic"
   location            = var.location
@@ -33,7 +37,11 @@ resource "azurerm_network_interface" "bastion" {
   }
 }
 
-# Network Interface for Application VM
+############################################
+# NETWORK INTERFACE FOR APPLICATION VM
+# (PRIVATE VM = NO PUBLIC IP)
+############################################
+
 resource "azurerm_network_interface" "app" {
   name                = "${var.project_name}-${var.environment}-app-nic"
   location            = var.location
@@ -44,11 +52,14 @@ resource "azurerm_network_interface" "app" {
     name                          = "internal"
     subnet_id                     = var.private_subnet_id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.app.id
+    # ❌ Removed public_ip_address_id — App VM must stay private
   }
 }
 
-# Bastion Host VM
+############################################
+# BASTION HOST VM
+############################################
+
 resource "azurerm_linux_virtual_machine" "bastion" {
   name                = "${var.project_name}-${var.environment}-bastion"
   resource_group_name = var.resource_group_name
@@ -78,11 +89,13 @@ resource "azurerm_linux_virtual_machine" "bastion" {
     version   = "latest"
   }
 
-  # Disable password authentication
   disable_password_authentication = true
 }
 
-# Application VM
+############################################
+# APPLICATION VM (PRIVATE)
+############################################
+
 resource "azurerm_linux_virtual_machine" "app" {
   name                = "${var.project_name}-${var.environment}-app"
   resource_group_name = var.resource_group_name

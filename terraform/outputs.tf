@@ -15,11 +15,6 @@ output "bastion_public_ip" {
   value       = module.compute.bastion_public_ip
 }
 
-output "app_public_ip" {
-  description = "Public IP address of the Application VM (temporary)"
-  value       = module.compute.app_public_ip
-}
-
 output "app_private_ip" {
   description = "Private IP address of the Application VM"
   value       = module.compute.app_private_ip
@@ -54,7 +49,7 @@ output "container_registry_admin_password" {
   sensitive   = true
 }
 
-# SSH Connection Commands
+# SSH Commands
 output "ssh_connection_commands" {
   description = "Commands to connect via SSH"
   value = {
@@ -63,8 +58,8 @@ output "ssh_connection_commands" {
   }
 }
 
-# Application URL (using public IP temporarily)
+# Application URL (using Bastion or Load Balancer in future)
 output "application_url" {
-  description = "URL to access the application"
-  value       = "http://${module.compute.app_public_ip}:8000"
+  description = "Application URL (temporary)"
+  value       = "http://${module.compute.bastion_public_ip}"
 }
