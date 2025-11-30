@@ -43,7 +43,9 @@ resource "azurerm_subnet" "database" {
   }
 }
 
-# Network Security Group for Bastion Host
+# -------------------------------------------------------
+# BASTION NSG — Only YOUR IP can SSH into Bastion
+# -------------------------------------------------------
 resource "azurerm_network_security_group" "bastion" {
   name                = "${var.project_name}-${var.environment}-bastion-nsg"
   location            = var.location
@@ -64,7 +66,7 @@ resource "azurerm_network_security_group" "bastion" {
 
   security_rule {
     name                       = "AllowSSHToPrivate"
-    priority                   = 100
+    priority                   = 110
     direction                  = "Outbound"
     access                     = "Allow"
     protocol                   = "Tcp"
@@ -75,14 +77,16 @@ resource "azurerm_network_security_group" "bastion" {
   }
 }
 
-# Network Security Group for Application VM
+# -------------------------------------------------------
+# APPLICATION VM NSG — NO PUBLIC ACCESS
+# -------------------------------------------------------
 resource "azurerm_network_security_group" "app" {
   name                = "${var.project_name}-${var.environment}-app-nsg"
   location            = var.location
   resource_group_name = var.resource_group_name
   tags                = var.tags
 
-  # Allow SSH only from Bastion subnet
+  # Allow SSH only from Bastion
   security_rule {
     name                       = "AllowSSHFromBastion"
     priority                   = 100
@@ -95,55 +99,55 @@ resource "azurerm_network_security_group" "app" {
     destination_address_prefix = "*"
   }
 
-  # Allow HTTP
+  # Allow HTTP inside VNet only
   security_rule {
-    name                       = "AllowHTTP"
+    name                       = "AllowHTTPInternal"
     priority                   = 110
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "80"
-    source_address_prefix      = "*"
+    source_address_prefix      = "VirtualNetwork"   # FIXED
     destination_address_prefix = "*"
   }
 
-  # Allow HTTPS
+  # Allow HTTPS inside VNet only
   security_rule {
-    name                       = "AllowHTTPS"
+    name                       = "AllowHTTPSInternal"
     priority                   = 120
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "443"
-    source_address_prefix      = "*"
+    source_address_prefix      = "VirtualNetwork"   # FIXED
     destination_address_prefix = "*"
   }
 
-  # Allow Django backend port
+  # Django backend (port 8000) internal only
   security_rule {
-    name                       = "AllowBackend"
+    name                       = "AllowBackendInternal"
     priority                   = 130
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "8000"
-    source_address_prefix      = "*"
+    source_address_prefix      = "VirtualNetwork"   # FIXED
     destination_address_prefix = "*"
   }
 
-  # Allow React frontend port (if needed for development)
+  # React dev server (3000) internal only
   security_rule {
-    name                       = "AllowFrontend"
+    name                       = "AllowFrontendInternal"
     priority                   = 140
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "3000"
-    source_address_prefix      = "*"
+    source_address_prefix      = "VirtualNetwork"   # FIXED
     destination_address_prefix = "*"
   }
 }
