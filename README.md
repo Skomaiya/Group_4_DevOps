@@ -86,6 +86,16 @@ While the application is a functional LMS, its primary purpose in this course is
 * Nginx as reverse proxy (optional)
 * Environment variables for configuration management
 
+## 🚀 Production Deployment
+
+- **Live App URL:** http://YOUR_APP_PUBLIC_IP
+- **Backend (API):** http://YOUR_APP_PUBLIC_IP:8000
+- **Cloud Provider:** Microsoft Azure
+- **Infra as Code:** Terraform (`terraform/` directory)
+- **Configuration Management:** Ansible (`ansible/` directory)
+- **CI/CD:** GitHub Actions (`.github/workflows/ci.yml` and `cd.yml`)
+
+
 ## 🧱 High-Level Architecture
 Deployed as:
 * **Frontend** → Hosted on Netlify / Vercel

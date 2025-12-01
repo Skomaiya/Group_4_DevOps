@@ -5,6 +5,7 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import filters
 from django.utils import timezone
+from django.db.models import Q
 from drf_spectacular.utils import extend_schema
 
 from api.models.course import Course, Lesson, Enrollment
@@ -53,19 +54,25 @@ class CourseViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         """
         Optionally restricts the returned courses.
-        - Published courses are visible to everyone
-        - Draft courses are only visible to the instructor
+        - Published courses are visible to everyone (authenticated users)
+        - Draft courses are only visible to the course instructor
         """
-        queryset = Course.objects.all()
+        queryset = Course.objects.select_related('instructor').all()
 
-        # Filter out drafts for non-owners
-        if not self.request.user.is_authenticated or self.request.user.role != 'instructor':
+        # For unauthenticated users, only show published courses
+        if not self.request.user.is_authenticated:
             queryset = queryset.filter(status='published')
+        # For students, only show published courses
+        elif self.request.user.role == 'student':
+            queryset = queryset.filter(status='published')
+        # For instructors, show their own courses (draft or published) + all published courses
         elif self.request.user.role == 'instructor':
-            # Instructors can see their own drafts
             queryset = queryset.filter(
-                instructor=self.request.user
-            ) | Course.objects.filter(status='published')
+                Q(instructor=self.request.user) | Q(status='published')
+            )
+        # For other roles (admin, etc.), show all courses
+        else:
+            queryset = queryset.all()
 
         return queryset
 

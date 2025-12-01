@@ -1,0 +1,17 @@
+# Example Ansible Inventory for LearnHub Deployment
+# Copy this file to inventory.ini and update with your actual values
+# Get values from: terraform output
+
+[app_server]
+app-vm ansible_host=10.0.2.4
+
+[app_server:vars]
+ansible_user=adminuser
+ansible_ssh_private_key_file=~/.ssh/id_rsa
+ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q adminuser@20.123.45.67"'
+
+# Instructions:
+# 1. Replace 10.0.2.4 with your App VM private IP (terraform output app_private_ip)
+# 2. Replace 20.123.45.67 with your Bastion public IP (terraform output bastion_public_ip)
+# 3. Ensure your SSH key path is correct (~/.ssh/id_rsa)
+

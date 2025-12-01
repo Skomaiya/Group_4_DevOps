@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.utils.text import slugify
 from api.models.course import Course, Lesson, Enrollment
 from api.serializers.user_serializers import UserSerializer
 
@@ -59,6 +60,18 @@ class CourseCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Set instructor to the current user
         validated_data['instructor'] = self.context['request'].user
+
+        # Auto-generate slug if not provided
+        if not validated_data.get('slug'):
+            base_slug = slugify(validated_data['title'])
+            # Ensure uniqueness by appending a number if needed
+            slug = base_slug
+            counter = 1
+            while Course.objects.filter(slug=slug).exists():
+                slug = f"{base_slug}-{counter}"
+                counter += 1
+            validated_data['slug'] = slug
+
         return super().create(validated_data)
 
 
@@ -94,6 +107,7 @@ class EnrollmentSerializer(serializers.ModelSerializer):
 
 class EnrollmentCreateSerializer(serializers.ModelSerializer):
     """Serializer for creating enrollments"""
+    status = serializers.ChoiceField(choices=Enrollment.STATUS_CHOICES, default='active', required=False)
 
     class Meta:
         model = Enrollment
@@ -102,6 +116,10 @@ class EnrollmentCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         # Set student to the current user
         validated_data['student'] = self.context['request'].user
+
+        # Set default status if not provided
+        if 'status' not in validated_data:
+            validated_data['status'] = 'active'
 
         # Check if already enrolled
         enrollment, created = Enrollment.objects.get_or_create(

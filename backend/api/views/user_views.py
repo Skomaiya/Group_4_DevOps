@@ -131,7 +131,15 @@ class UserViewSet(ModelViewSet):
         self.clear_cache()
 
     def clear_cache(self):
-        cache.delete_pattern(f"{USER_CACHE_KEY}*")
+        # Clear all user-related cache entries
+        # Note: delete_pattern requires Redis. For default cache, we clear common keys
+        try:
+            # Try delete_pattern if using Redis
+            cache.delete_pattern(f"{USER_CACHE_KEY}*")
+        except AttributeError:
+            # Fallback for default cache backend - clear known cache keys
+            # In production, use Redis for pattern deletion
+            cache.delete(f"{USER_CACHE_KEY}_all")
 
 
 @extend_schema(tags=["Profiles"])

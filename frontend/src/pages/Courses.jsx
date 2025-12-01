@@ -14,13 +14,25 @@ export default function Courses() {
   useEffect(() => {
     (async () => {
       try {
+        setLoading(true);
         const res = await fetchCourses();
-        setCourses(res.data);
-        setFilteredCourses(res.data);
+        const coursesData = res.data?.results || res.data || [];
+        const coursesArray = Array.isArray(coursesData) ? coursesData : [];
+        
+        if (coursesArray.length === 0) {
+          console.warn("No courses returned from API");
+        }
+        
+        setCourses(coursesArray);
+        setFilteredCourses(coursesArray);
       } catch (e) {
         console.error("Failed to fetch courses:", e);
+        console.error("Error details:", e.response?.data || e.message);
+        setCourses([]);
+        setFilteredCourses([]);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     })();
   }, []);
 
@@ -134,7 +146,16 @@ export default function Courses() {
       </div>
 
       {/* Course Grid */}
-      {filteredCourses.length === 0 ? (
+      {courses.length === 0 && !loading ? (
+        <div className="text-center py-12">
+          <p className="text-gray-500 text-lg mb-2">
+            No courses available at the moment.
+          </p>
+          <p className="text-gray-400 text-sm">
+            Check back later or contact an instructor to create courses.
+          </p>
+        </div>
+      ) : filteredCourses.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">
             No courses found matching your criteria.

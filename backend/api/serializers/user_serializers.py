@@ -18,16 +18,28 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(serializers.ModelSerializer):
-    profile = ProfileSerializer(read_only=True)
+    profile = ProfileSerializer(read_only=True, required=False, allow_null=True)
 
     class Meta:
         model = User
         fields = [
             'id', 'username', 'email', 'role', 'phone_number',
             'country', 'city', 'is_active',
-            'is_verified', 'created_at', 'updated_at', 'profile'
+            'is_verified', 'created_at', 'updated_at', 'date_joined', 'profile'
         ]
-        read_only_fields = ['is_active', 'is_verified', 'created_at', 'updated_at']
+        read_only_fields = ['is_active', 'is_verified', 'created_at', 'updated_at', 'date_joined']
+
+    def to_representation(self, instance):
+        """Override to handle cases where profile might not exist"""
+        representation = super().to_representation(instance)
+        try:
+            # Check if profile exists using getattr to avoid DoesNotExist exception
+            profile = getattr(instance, 'profile', None)
+            if profile is None:
+                representation['profile'] = None
+        except Exception:
+            representation['profile'] = None
+        return representation
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
@@ -55,9 +67,10 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         missing_fields = [field for field in required_fields if not attrs.get(field)]
 
         if missing_fields:
-            raise serializers.ValidationError(
-                {field: "This field is required to verify your account." for field in missing_fields}
-            )
+            errors = {}
+            for field in missing_fields:
+                errors[field] = ["This field is required to verify your account."]
+            raise serializers.ValidationError(errors)
 
         return attrs
 
@@ -78,7 +91,13 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         group, _ = Group.objects.get_or_create(name=group_name)
         user.groups.add(group)
 
-        Profile.objects.get_or_create(user=user)
+        # Profile will be created automatically by signal in apps.py
+        # But ensure it exists in case signal didn't fire
+        try:
+            Profile.objects.get_or_create(user=user)
+        except Exception:
+            # If profile creation fails, log but don't fail registration
+            pass
 
         return user
 
@@ -93,8 +112,28 @@ class LogoutSerializer(serializers.Serializer):
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """
+    Custom serializer that accepts email for login (since USERNAME_FIELD is 'email').
+    Maps 'email' field from request to 'username' field for parent authentication.
+    """
+    email = serializers.EmailField(required=False, allow_blank=True)
+
     def validate(self, attrs):
+        # Get email from request (frontend sends 'email' field)
+        email = attrs.get('email', '')
+
+        if email:
+            # Map email to username field (since USERNAME_FIELD is 'email')
+            attrs['username'] = email
+        elif 'username' in attrs:
+            # If username is provided (backward compatibility), use it as email
+            # This handles cases where username might be sent instead
+            attrs['username'] = attrs.get('username', '')
+
+        # Call parent validate which will authenticate using email (USERNAME_FIELD)
+        # This will raise ValidationError if credentials are invalid
         data = super().validate(attrs)
+
         user_data = {
             "id": self.user.id,
             "email": self.user.email,
