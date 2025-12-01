@@ -14,6 +14,7 @@ module "networking" {
   location              = var.location
   resource_group_name   = azurerm_resource_group.main.name
   allowed_ssh_source_ip = var.allowed_ssh_source_ip
+  my_public_ip          = var.my_public_ip
   tags                  = var.tags
 }
 

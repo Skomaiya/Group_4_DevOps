@@ -47,6 +47,11 @@ variable "allowed_ssh_source_ip" {
   type        = string
 }
 
+variable "my_public_ip" {
+  description = "Public IP address for accessing resources"
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to apply to resources"
   type        = map(string)
