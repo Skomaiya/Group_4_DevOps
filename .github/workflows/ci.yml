@@ -51,11 +51,6 @@ jobs:
       - name: Build backend image for scanning
         run: docker build -t learnhub-backend backend/
 
-  ci-checks:
-    name: Security Scans
-    runs-on: ubuntu-latest
-    
-    steps:
       # -------------------------------
       # Trivy security scan
       # -------------------------------
