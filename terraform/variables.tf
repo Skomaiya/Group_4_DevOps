@@ -54,6 +54,11 @@ variable "db_name" {
   default     = "agriconnect_db"
 }
 
+variable "my_public_ip" {
+  description = "Public IP address for restricted access"
+  type        = string
+}
+
 variable "vm_size" {
   description = "Size of the VMs"
   type        = string
