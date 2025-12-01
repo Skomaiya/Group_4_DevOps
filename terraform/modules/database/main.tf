@@ -16,7 +16,7 @@ resource "azurerm_private_dns_zone_virtual_network_link" "postgres" {
 
 # PostgreSQL Flexible Server
 resource "azurerm_postgresql_flexible_server" "main" {
-  name                   = "group4devops${var.environment}db"
+  name                   = "group4devopsdb"
   resource_group_name    = var.resource_group_name
   location               = var.location
   version                = "14"

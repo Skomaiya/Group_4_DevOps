@@ -1,13 +1,12 @@
 terraform {
   required_version = ">= 1.0"
 
-  # ❌ Disable Terraform Cloud backend
-  # cloud {
-  #   organization = "Group_4_DevOps"
-  #   workspaces {
-  #     name = "LearnHub"
-  #   }
-  # }
+  cloud {
+    organization = "Group_4_DevOps"
+    workspaces {
+      name = "LearnHub"
+    }
+  }
 
   required_providers {
     azurerm = {
