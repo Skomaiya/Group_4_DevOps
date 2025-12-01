@@ -245,7 +245,7 @@ export default function Register() {
                   name="role"
                   value={form.role}
                   onChange={(e) => setForm({ ...form, role: e.target.value })}
-                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-700 focus:border-transparent transition"
                 >
                   <option value="student">Student</option>
                   <option value="instructor">Instructor</option>
@@ -255,7 +255,7 @@ export default function Register() {
               <div>
                 <label
                   htmlFor="phone_number"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-100 mb-2"
                 >
                   Phone Number *
                 </label>
