@@ -10,6 +10,7 @@ on:
 
 jobs:
   ci-checks:
+    name: Lint, Test & Build Docker Image
     runs-on: ubuntu-latest
 
     steps:
