@@ -69,9 +69,9 @@ export default function CourseCard({ course }) {
                 {course.instructor.username}
               </div>
             )}
-            {course.enrolled_students_count > 0 && (
+            {(course.enrolled_students_count || 0) > 0 && (
               <span className="text-xs text-gray-500">
-                {course.enrolled_students_count} students
+                {course.enrolled_students_count || 0} students
               </span>
             )}
           </div>

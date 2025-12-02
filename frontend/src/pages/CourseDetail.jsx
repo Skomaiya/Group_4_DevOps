@@ -20,26 +20,44 @@ export default function CourseDetail() {
 
   const loadCourseData = async () => {
     try {
+      if (!id) {
+        throw new Error("Course ID is missing");
+      }
+      
       const res = await fetchCourse(id);
+      
+      if (!res.data) {
+        throw new Error("Course data not found in response");
+      }
+      
       setCourse(res.data);
 
       // Check if user is enrolled
       if (user) {
         try {
           const enrollmentsRes = await fetchEnrollments();
-          const isEnrolled = enrollmentsRes.data.some(
-            (e) => e.course?.id === parseInt(id)
+          const enrollments = Array.isArray(enrollmentsRes.data) 
+            ? enrollmentsRes.data 
+            : enrollmentsRes.data?.results || [];
+          const isEnrolled = enrollments.some(
+            (e) => {
+              const courseId = e.course?.id || e.course_id;
+              return courseId === parseInt(id) || courseId === id;
+            }
           );
           setEnrolled(isEnrolled);
         } catch (e) {
           console.error("Failed to check enrollment:", e);
+          // Don't fail the whole page if enrollment check fails
         }
       }
     } catch (e) {
       console.error("Failed to fetch course:", e);
       showToast("Failed to load course details", "error");
+      setCourse(null); // Ensure course is null so error UI shows
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleEnroll = async () => {
@@ -174,21 +192,32 @@ export default function CourseDetail() {
               </div>
 
               {user ? (
-                <button
-                  onClick={handleEnroll}
-                  disabled={enrolled || enrolling}
-                  className={`px-8 py-3 rounded-lg font-semibold transition-colors ${
-                    enrolled
-                      ? "bg-gray-200 text-gray-800 cursor-not-allowed"
-                      : "bg-white text-purple-600 hover:bg-gray-100"
-                  }`}
-                >
-                  {enrolling
-                    ? "Enrolling..."
-                    : enrolled
-                    ? "✓ Enrolled"
-                    : "Enroll Now"}
-                </button>
+                user.role === "instructor" && course.instructor?.id === user.id ? (
+                  <div className="flex gap-3">
+                    <Link
+                      to={`/courses/${id}/edit`}
+                      className="px-8 py-3 bg-white text-purple-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+                    >
+                      Edit Course
+                    </Link>
+                  </div>
+                ) : user.role === "student" ? (
+                  <button
+                    onClick={handleEnroll}
+                    disabled={enrolled || enrolling}
+                    className={`px-8 py-3 rounded-lg font-semibold transition-colors ${
+                      enrolled
+                        ? "bg-gray-200 text-gray-800 cursor-not-allowed"
+                        : "bg-white text-purple-600 hover:bg-gray-100"
+                    }`}
+                  >
+                    {enrolling
+                      ? "Enrolling..."
+                      : enrolled
+                      ? "✓ Enrolled"
+                      : "Enroll Now"}
+                  </button>
+                ) : null
               ) : (
                 <Link
                   to="/login"

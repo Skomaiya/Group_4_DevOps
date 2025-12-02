@@ -5,4 +5,5 @@ export const register = (data) => axiosClient.post("auth/register/", data);
 export const me = () => axiosClient.get("user/");
 export const fetchProfile = () => axiosClient.get("profile/");
 export const updateProfile = (data) => axiosClient.patch("profile/", data);
+export const updateUser = (data) => axiosClient.patch("user/", data);
 export const logout = () => axiosClient.post("auth/logout/");

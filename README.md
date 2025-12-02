@@ -1,6 +1,12 @@
 # LearnHub - A Lightweight African Learning Platform
 > A data-efficient LMS designed for and by African students, built to practice production-level DevOps.
 
+# Video Link:
+* https://youtu.be/bqqLeoUtpVg
+
+#Public URL:
+* http://40.120.26.21:8000
+
 ## Team Members
 * Mukunzi Patrick (Frontend Developer)
 * Samuel Komaiya (Backend Developer)
@@ -85,6 +91,16 @@ While the application is a functional LMS, its primary purpose in this course is
 * AWS / Render / Railway for deployment
 * Nginx as reverse proxy (optional)
 * Environment variables for configuration management
+
+## 🚀 Production Deployment
+
+- **Live App URL:** http://YOUR_APP_PUBLIC_IP
+- **Backend (API):** http://YOUR_APP_PUBLIC_IP:8000
+- **Cloud Provider:** Microsoft Azure
+- **Infra as Code:** Terraform (`terraform/` directory)
+- **Configuration Management:** Ansible (`ansible/` directory)
+- **CI/CD:** GitHub Actions (`.github/workflows/ci.yml` and `cd.yml`)
+
 
 ## 🧱 High-Level Architecture
 Deployed as:

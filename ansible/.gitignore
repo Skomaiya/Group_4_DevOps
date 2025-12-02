@@ -1,0 +1,17 @@
+# Ansible Vault files
+*.vault
+vault.yml
+group_vars/*/vault.yml
+
+# Ansible retry files
+*.retry
+
+# Inventory with real IPs (use template)
+inventory.ini
+!inventory.ini.example
+
+# Temporary files
+*.tmp
+*.swp
+.ansible/
+

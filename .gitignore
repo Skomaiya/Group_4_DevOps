@@ -35,6 +35,7 @@ staticfiles/
 *.env
 .env.*
 !.env.example
+ssh/
 
 # Configuration files with secrets
 config.local.yml
@@ -123,6 +124,7 @@ $RECYCLE.BIN/
 *.tfvars
 .terraform/
 .terraform.lock.hcl
+./terraform-outputs.json
 
 # Kubernetes
 *.kubeconfig
@@ -225,3 +227,8 @@ site/
 *.zip
 *.tar.gz
 *.rar
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup

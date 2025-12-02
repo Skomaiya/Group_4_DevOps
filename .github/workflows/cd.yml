@@ -1,0 +1,152 @@
+name: CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # ----------------------------------------
+  # First job: Re-run CI checks before deploy
+  # ----------------------------------------
+  ci-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+
+      - name: Run flake8
+        run: flake8 .
+
+      - name: Run Django tests
+        working-directory: backend
+        run: |
+          python manage.py migrate --noinput
+          python manage.py test --noinput
+
+      - name: Build backend image for scanning
+        run: docker build -t learnhub-backend backend/
+
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget apt-transport-https gnupg lsb-release
+          wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+          echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee /etc/apt/sources.list.d/trivy.list
+          sudo apt-get update
+          sudo apt-get install -y trivy
+
+      - name: Run Trivy scan
+        run: trivy image --severity CRITICAL,HIGH --exit-code 1 learnhub-backend
+
+      - name: Install tfsec
+        run: |
+          wget https://github.com/aquasecurity/tfsec/releases/latest/download/tfsec-linux-amd64 -O tfsec
+          chmod +x tfsec
+          sudo mv tfsec /usr/local/bin/tfsec
+
+      - name: Run tfsec
+        run: tfsec terraform/
+
+  # ----------------------------------------
+  # Deployment job (runs only if CI passes)
+  # ----------------------------------------
+  deploy:
+    runs-on: ubuntu-latest
+    needs: ci-checks
+
+    env:
+      ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+      ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+      ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+      APP_VM_USERNAME: ${{ secrets.APP_VM_USERNAME }}
+      BASTION_PUBLIC_IP: ${{ secrets.BASTION_PUBLIC_IP }}
+      APP_PRIVATE_IP: ${{ secrets.APP_PRIVATE_IP }}
+      SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # ----------------------------------------
+      # Login to Azure Container Registry
+      # ----------------------------------------
+      - name: Azure Container Registry Login
+        run: |
+          echo $ACR_PASSWORD | docker login $ACR_LOGIN_SERVER -u $ACR_USERNAME --password-stdin
+
+      # ----------------------------------------
+      # Build & push Backend image
+      # ----------------------------------------
+      - name: Build & Push Backend Image
+        run: |
+          docker build -t $ACR_LOGIN_SERVER/learnhub-backend:latest backend/
+          docker push $ACR_LOGIN_SERVER/learnhub-backend:latest
+
+      # ----------------------------------------
+      # Build & push Frontend image
+      # ----------------------------------------
+      - name: Build & Push Frontend Image
+        run: |
+          docker build -t $ACR_LOGIN_SERVER/learnhub-frontend:latest frontend/
+          docker push $ACR_LOGIN_SERVER/learnhub-frontend:latest
+
+      # ----------------------------------------
+      # SSH setup for Bastion → Private VM
+      # ----------------------------------------
+      - name: Configure SSH
+        run: |
+          echo "$SSH_PRIVATE_KEY" > ssh_key
+          chmod 600 ssh_key
+
+      # ----------------------------------------
+      # Generate Ansible Inventory
+      # ----------------------------------------
+      - name: Generate Ansible Inventory
+        run: |
+          cat <<EOF > ansible_inventory
+          [appserver]
+          $APP_PRIVATE_IP ansible_user=$APP_VM_USERNAME ansible_ssh_private_key_file=ssh_key ansible_ssh_common_args='-o ProxyCommand="ssh -i ssh_key -o StrictHostKeyChecking=no $APP_VM_USERNAME@$BASTION_PUBLIC_IP -W %h:%p"'
+          EOF
+
+      # ----------------------------------------
+      # Install Ansible
+      # ----------------------------------------
+      - name: Install Ansible
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ansible
+
+      # ----------------------------------------
+      # Deploy to VM with Ansible
+      # ----------------------------------------
+      - name: Run Ansible Playbook
+        env:
+          ACR_LOGIN_SERVER: ${{ secrets.ACR_LOGIN_SERVER }}
+          ACR_USERNAME: ${{ secrets.ACR_USERNAME }}
+          ACR_PASSWORD: ${{ secrets.ACR_PASSWORD }}
+          DB_HOST: ${{ secrets.DB_HOST }}
+          DB_NAME: ${{ secrets.DB_NAME }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          ALLOWED_HOSTS: ${{ secrets.ALLOWED_HOSTS }}
+        run: ansible-playbook ansible/deploy.yml -i ansible_inventory

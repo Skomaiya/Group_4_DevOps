@@ -31,7 +31,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-j!5*yrw4*lmd0rnugk%(vmfzos
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'True').lower() == 'true'
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(
+    ',') if os.getenv('ALLOWED_HOSTS') else ['localhost', '127.0.0.1']
 
 
 # Application definition
@@ -126,6 +127,8 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 CORS_ALLOWED_ORIGINS = os.getenv('CORS_ALLOWED_ORIGINS', 'http://localhost:5173,http://127.0.0.1:5173').split(',')
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = DEBUG  # Allow all origins in debug mode
 
 # Custom User Model
 AUTH_USER_MODEL = 'api.User'
@@ -171,6 +174,19 @@ SPECTACULAR_SETTINGS = {
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
 }
+
+# Cache Configuration
+# Default to local memory cache for development
+# For production, configure Redis or another cache backend
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+# Cache TTL in seconds (5 minutes default)
+CACHE_TTL = int(os.getenv('CACHE_TTL', 300))
 
 
 # Internationalization

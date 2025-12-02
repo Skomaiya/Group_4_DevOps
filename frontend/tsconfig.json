@@ -7,8 +7,16 @@
     "moduleResolution": "bundler",
     "target": "ES2020",
     "module": "ESNext",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "isolatedModules": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["vite/client"],
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": false,
+    "noEmit": true,
+    "resolveJsonModule": true
   },
-  "include": ["src"]
+  "include": ["src", "src/**/*"],
+  "exclude": ["node_modules"]
 }

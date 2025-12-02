@@ -20,22 +20,63 @@ export default function Login() {
       return;
     }
 
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(form.email)) {
+      setErr("Please enter a valid email address");
+      return;
+    }
+
     setLoading(true);
     try {
-      const res = await login(form);
+      // Clear any existing tokens before attempting new login
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
+      
+      // Send email and password to backend
+      const res = await login({
+        email: form.email,
+        password: form.password,
+      });
       const token = res.data.access || res.data.token || res.data.access_token;
+      
+      if (!token) {
+        setErr("Login failed: No token received from server.");
+        return;
+      }
+      
       localStorage.setItem("access_token", token);
-      // fetch user
-      try {
-        const u = await me();
-        setUser(u.data);
-      } catch (e) {
-        console.error(e);
+      
+      // Store refresh token if provided
+      if (res.data.refresh) {
+        localStorage.setItem("refresh_token", res.data.refresh);
+      }
+      
+      // Use user data from login response if available, otherwise fetch it
+      if (res.data.user && res.data.user.role) {
+        setUser(res.data.user);
+      } else {
+        // Fallback: fetch user data
+        try {
+          const u = await me();
+          setUser(u.data);
+        } catch (e) {
+          console.error("Failed to fetch user:", e);
+          // If we can't fetch user, clear token and show error
+          localStorage.removeItem("access_token");
+          localStorage.removeItem("refresh_token");
+          setErr("Login successful but failed to load user data. Please try again.");
+          return;
+        }
       }
       navigate("/dashboard");
     } catch (e) {
+      // Clear tokens on error
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("refresh_token");
       setErr(
         e.response?.data?.detail ||
+          e.response?.data?.message ||
           "Login failed. Please check your credentials."
       );
     } finally {
@@ -62,7 +103,7 @@ export default function Login() {
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Email address
+                  Email Address
                 </label>
                 <input
                   id="email"
@@ -71,7 +112,8 @@ export default function Login() {
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                  placeholder="Enter your email"
+                  placeholder="Enter your email address"
+                  autoComplete="email"
                 />
               </div>
 

@@ -1,25 +1,9 @@
-import { useState, useCallback } from "react";
-
-interface Toast {
-  id: number;
-  message: string;
-  type: "success" | "error" | "info" | "warning";
-}
+import { useToastStore } from "../store/toastStore";
 
 export default function useToast() {
-  const [toasts, setToasts] = useState<Toast[]>([]);
-
-  const showToast = useCallback(
-    (message: string, type: Toast["type"] = "info") => {
-      const id = Date.now();
-      setToasts((prev) => [...prev, { id, message, type }]);
-    },
-    []
-  );
-
-  const removeToast = useCallback((id: number) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id));
-  }, []);
+  const showToast = useToastStore((s) => s.showToast);
+  const removeToast = useToastStore((s) => s.removeToast);
+  const toasts = useToastStore((s) => s.toasts);
 
   return { toasts, showToast, removeToast };
 }

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import { register } from "../api/authApi";
+import { register, me } from "../api/authApi";
 import { useNavigate, Link } from "react-router-dom";
+import { useAuthStore } from "../store/authStore";
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -8,14 +9,15 @@ export default function Register() {
     email: "",
     password: "",
     confirmPassword: "",
-    phone_number: "",
     role: "student",
+    phone_number: "",
     country: "",
     city: "",
   });
   const [err, setErr] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const setUser = useAuthStore((s) => s.setUser);
 
   const submit = async (e) => {
     e.preventDefault();
@@ -31,7 +33,7 @@ export default function Register() {
       !form.country ||
       !form.city
     ) {
-      setErr("Please fill in all fields");
+      setErr("Please fill in all required fields");
       return;
     }
 
@@ -47,23 +49,97 @@ export default function Register() {
 
     setLoading(true);
     try {
-      await register({
+      const res = await register({
         username: form.username,
         email: form.email,
         password: form.password,
+<<<<<<< HEAD
         phone_number: form.phone_number,
         role: form.role,
+=======
+        role: form.role,
+        phone_number: form.phone_number,
+>>>>>>> 6cec89df9b6836bcb716000c41ebef44b267ed1f
         country: form.country,
         city: form.city,
       });
-      navigate("/login");
+      
+      // Handle tokens if provided (auto-login after registration)
+      if (res.data.tokens) {
+        const token = res.data.tokens.access || res.data.tokens.access_token;
+        if (token) {
+          localStorage.setItem("access_token", token);
+          
+          // Use user data from registration response if available (includes role)
+          if (res.data.user && res.data.user.role) {
+            setUser(res.data.user);
+            navigate("/dashboard");
+          } else {
+            // Fallback: Fetch user data
+            try {
+              const u = await me();
+              setUser(u.data);
+              navigate("/dashboard");
+            } catch (e) {
+              console.error("Failed to fetch user after registration:", e);
+              navigate("/login");
+            }
+          }
+        } else {
+          navigate("/login");
+        }
+      } else {
+        navigate("/login");
+      }
     } catch (e) {
-      setErr(
-        e.response?.data?.detail ||
-          e.response?.data?.username?.[0] ||
-          e.response?.data?.email?.[0] ||
-          "Registration failed"
-      );
+      // Handle validation errors from backend
+      console.error("Full registration error:", e);
+      console.error("Error response:", e.response);
+      console.error("Error response data:", e.response?.data);
+      console.error("Error response status:", e.response?.status);
+      
+      const errorData = e.response?.data;
+      
+      // Network error (no response)
+      if (!e.response) {
+        setErr("Network error: Could not connect to server. Please check if the backend is running.");
+        return;
+      }
+      
+      if (errorData) {
+        // Check for field-specific errors (DRF format: {field: ["error message"]})
+        const fieldErrors = Object.keys(errorData)
+          .filter(key => {
+            const value = errorData[key];
+            return (Array.isArray(value) && value.length > 0) || 
+                   (typeof value === 'string' && value.length > 0);
+          })
+          .map(key => {
+            const value = errorData[key];
+            if (Array.isArray(value)) {
+              return `${key}: ${value[0]}`;
+            } else if (typeof value === 'string') {
+              return `${key}: ${value}`;
+            }
+            return `${key}: ${JSON.stringify(value)}`;
+          })
+          .join(', ');
+        
+        if (fieldErrors) {
+          setErr(fieldErrors);
+        } else if (errorData.detail) {
+          setErr(errorData.detail);
+        } else if (typeof errorData === 'string') {
+          setErr(errorData);
+        } else {
+          // Try to extract any error message
+          const errorMessage = JSON.stringify(errorData, null, 2);
+          setErr(errorMessage.length > 300 ? "Registration failed. Please check all fields. See console for details." : errorMessage);
+        }
+      } else {
+        // No error data but got a response
+        setErr(`Registration failed with status ${e.response.status}. Please check the console for details.`);
+      }
     } finally {
       setLoading(false);
     }
@@ -243,6 +319,90 @@ export default function Register() {
                   className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
                   placeholder="Confirm your password"
                 />
+              </div>
+
+              <div>
+                <label
+                  htmlFor="role"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  I want to join as
+                </label>
+                <select
+                  id="role"
+                  name="role"
+                  value={form.role}
+                  onChange={(e) => setForm({ ...form, role: e.target.value })}
+                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-purple-700 focus:border-transparent transition"
+                >
+                  <option value="student">Student</option>
+                  <option value="instructor">Instructor</option>
+                </select>
+              </div>
+
+              <div>
+                <label
+                  htmlFor="phone_number"
+                  className="block text-sm font-medium text-gray-100 mb-2"
+                >
+                  Phone Number *
+                </label>
+                <input
+                  id="phone_number"
+                  name="phone_number"
+                  type="tel"
+                  value={form.phone_number}
+                  onChange={(e) =>
+                    setForm({ ...form, phone_number: e.target.value })
+                  }
+                  className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                  placeholder="+1234567890"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label
+                    htmlFor="country"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    Country *
+                  </label>
+                  <input
+                    id="country"
+                    name="country"
+                    type="text"
+                    value={form.country}
+                    onChange={(e) =>
+                      setForm({ ...form, country: e.target.value })
+                    }
+                    className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                    placeholder="e.g., Nigeria"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="city"
+                    className="block text-sm font-medium text-gray-700 mb-2"
+                  >
+                    City *
+                  </label>
+                  <input
+                    id="city"
+                    name="city"
+                    type="text"
+                    value={form.city}
+                    onChange={(e) =>
+                      setForm({ ...form, city: e.target.value })
+                    }
+                    className="appearance-none block w-full px-4 py-3 border border-gray-300 rounded-lg text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
+                    placeholder="e.g., Lagos"
+                    required
+                  />
+                </div>
               </div>
             </div>
 
