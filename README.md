@@ -1,6 +1,12 @@
 # LearnHub - A Lightweight African Learning Platform
 > A data-efficient LMS designed for and by African students, built to practice production-level DevOps.
 
+# Video Link:
+* https://youtu.be/bqqLeoUtpVg
+
+#Public URL:
+* http://40.120.26.21:8000
+
 ## Team Members
 * Mukunzi Patrick (Frontend Developer)
 * Samuel Komaiya (Backend Developer)
