@@ -1,123 +1,142 @@
 # LearnHub - A Lightweight African Learning Platform
+
 > A data-efficient LMS designed for and by African students, built to practice production-level DevOps.
 
 # Video Link:
-* https://youtu.be/bqqLeoUtpVg
+
+- https://youtu.be/bqqLeoUtpVg
 
 #Public URL:
-* http://40.120.26.21:8000
+
+- http://40.120.26.21:8000
 
 ## Team Members
-* Mukunzi Patrick (Frontend Developer)
-* Samuel Komaiya (Backend Developer)
-* Plamedi Mayala (Backend Developer)
+
+- Mukunzi Patrick (Frontend Developer)
+- Samuel Komaiya (Backend Developer)
+- Plamedi Mayala (Backend Developer)
 
 ## 🧭 Overview
+
 LearnHub is a lightweight, mobile-first Learning Management System (LMS) built to address the unique challenges of university and secondary students across Africa.
 
 ### The Problem (African Context)
+
 In many African educational institutions, students face significant barriers to digital learning. These include:
+
 1.  **High Data Costs:** Internet access is expensive, making it difficult to stream video-heavy courses or download large files.
 2.  **Scattered Resources:** Critical study materials like past exam papers, lecture notes, and study guides are often scattered across making them hard to find, track, and access.
 
 ### Our Solution & Value Proposition
+
 LearnHub tackles this by providing a **central, data-efficient, and accessible platform**.
 
-It is *intentionally* minimal, ensuring it is fast and consumes less data, making it ideal for low-bandwidth mobile connections. Our value proposition is **accessible education**:
-* **For Students:** A "single source of truth" to find courses without high data usage.
-* **For Instructors:** A simple way to upload content (text, video links).
+It is _intentionally_ minimal, ensuring it is fast and consumes less data, making it ideal for low-bandwidth mobile connections. Our value proposition is **accessible education**:
+
+- **For Students:** A "single source of truth" to find courses without high data usage.
+- **For Instructors:** A simple way to upload content (text, video links).
 
 ### Project Goal (DevOps Course)
+
 While the application is a functional LMS, its primary purpose in this course is to serve as a real-world workload for a robust DevOps implementation. The main goal is to design, develop, and deploy this production-ready application while mastering CI/CD, containerization, and cloud deployment practices.
 
 ## 🎯 Project Objectives
-* Build a functional and minimal LMS that addresses the core problem of resource accessibility for African students.
-* Implement role-based access for the two key user groups (Students and Instructors).
-* Implement a full DevOps pipeline for continuous integration and deployment.
-* Deploy the containerized, full-stack application to a cloud environment (e.g., AWS, Render).
-* Ensure the final product is scalable, maintainable, and reliable.
+
+- Build a functional and minimal LMS that addresses the core problem of resource accessibility for African students.
+- Implement role-based access for the two key user groups (Students and Instructors).
+- Implement a full DevOps pipeline for continuous integration and deployment.
+- Deploy the containerized, full-stack application to a cloud environment (e.g., AWS, Render).
+- Ensure the final product is scalable, maintainable, and reliable.
 
 ## 👥 Target Users
 
 ### Students
-* **Who:** University or senior secondary students in an African context (e.g., Nigeria, Kenya, Rwanda).
-* **Needs:** A low-cost, easy-to-access, and reliable way to find localized study materials, course notes, and past papers.
-* **Features:**
-    * Register, log in, and manage a simple profile.
-    * Browse available courses and enroll.
-    * Access course lessons (text, video links) and download resources.
-    * Track course completion progress.
+
+- **Who:** University or senior secondary students in an African context (e.g., Nigeria, Kenya, Rwanda).
+- **Needs:** A low-cost, easy-to-access, and reliable way to find localized study materials, course notes, and past papers.
+- **Features:**
+  - Register, log in, and manage a simple profile.
+  - Browse available courses and enroll.
+  - Access course lessons (text, video links) and download resources.
+  - Track course completion progress.
 
 ### Instructors
-* **Who:** University lecturers, teaching assistants (TAs), or even student tutors running study groups.
-* **Needs:** A simple, fast way to upload materials and communicate with their students without a complex interface.
-* **Features:**
-    * Create, edit, and publish courses.
-    * Upload lessons (text and videos links).
-    * Manage student enrollments for their courses.
-    * View student progress and submissions.
+
+- **Who:** University lecturers, teaching assistants (TAs), or even student tutors running study groups.
+- **Needs:** A simple, fast way to upload materials and communicate with their students without a complex interface.
+- **Features:**
+  - Create, edit, and publish courses.
+  - Upload lessons (text and videos links).
+  - Manage student enrollments for their courses.
+  - View student progress and submissions.
 
 ## ⚙️ Core Features (MVP Scope)
 
-| Category | Features |
-| :--- | :--- |
-| **Authentication** | Django-based user registration & JWT authentication. Role-based access (Student/Instructor). |
-| **Course Management** | Instructors can create, edit, and delete their own courses. |
-| **Enrollment System** | Students can browse and enroll in published courses. |
-| **Lesson Management** | Each course can have multiple lessons (text or video). |
-| **Quizzes (Optional)** | Simple quiz functionality (multiple-choice). |
-| **User Dashboard** | Track enrolled courses and progress. |
-| **Responsive UI** | Modern, responsive interface built with TailwindCSS. |
+| Category               | Features                                                                                     |
+| :--------------------- | :------------------------------------------------------------------------------------------- |
+| **Authentication**     | Django-based user registration & JWT authentication. Role-based access (Student/Instructor). |
+| **Course Management**  | Instructors can create, edit, and delete their own courses.                                  |
+| **Enrollment System**  | Students can browse and enroll in published courses.                                         |
+| **Lesson Management**  | Each course can have multiple lessons (text or video).                                       |
+| **Quizzes (Optional)** | Simple quiz functionality (multiple-choice).                                                 |
+| **User Dashboard**     | Track enrolled courses and progress.                                                         |
+| **Responsive UI**      | Modern, responsive interface built with TailwindCSS.                                         |
 
 ## 🧩 Technology Stack
+
 ### Frontend
-* React 18 + TypeScript
-* Vite (fast build tool)
-* Tailwind CSS for styling
-* Axios for API requests
-* React Router v6 for navigation
-* React Context for authentication
-* Redux Toolkit for course filtering and state management
+
+- React 18 + TypeScript
+- Vite (fast build tool)
+- Tailwind CSS for styling
+- Axios for API requests
+- React Router v6 for navigation
+- React Context for authentication
+- Redux Toolkit for course filtering and state management
 
 ### Backend
-* Django REST Framework (Python)
-* PostgreSQL database
-* JWT Authentication via djangorestframework-simplejwt
-* Docker for containerization
+
+- Django REST Framework (Python)
+- PostgreSQL database
+- JWT Authentication via djangorestframework-simplejwt
+- Docker for containerization
 
 ### DevOps & Deployment
-* GitHub Actions for CI/CD pipelines
-* Docker Compose for service orchestration
-* AWS / Render / Railway for deployment
-* Nginx as reverse proxy (optional)
-* Environment variables for configuration management
+
+- GitHub Actions for CI/CD pipelines
+- Docker Compose for service orchestration
+- AWS / Render / Railway for deployment
+- Nginx as reverse proxy (optional)
+- Environment variables for configuration management
 
 ## 🚀 Production Deployment
 
-- **Live App URL:** http://YOUR_APP_PUBLIC_IP
-- **Backend (API):** http://YOUR_APP_PUBLIC_IP:8000
+- **Live App URL:** http://40.120.26.21:5173
+- **Backend (API):** http://40.120.26.21:8000
+- **API Documentation:** http://40.120.26.21:8000/api/schema/swagger-ui/
 - **Cloud Provider:** Microsoft Azure
 - **Infra as Code:** Terraform (`terraform/` directory)
 - **Configuration Management:** Ansible (`ansible/` directory)
 - **CI/CD:** GitHub Actions (`.github/workflows/ci.yml` and `cd.yml`)
 
-
 ## 🧱 High-Level Architecture
+
 Deployed as:
-* **Frontend** → Hosted on Netlify / Vercel
-* **Backend** → Hosted on Render / Railway / AWS EC2
-* **Database** → PostgreSQL (managed service)
-* **CI/CD** → GitHub Actions automated pipeline
+
+- **Frontend** → Hosted on Netlify / Vercel
+- **Backend** → Hosted on Render / Railway / AWS EC2
+- **Database** → PostgreSQL (managed service)
+- **CI/CD** → GitHub Actions automated pipeline
 
 ## 🧪 Planned DevOps Implementations
 
-| Tool | Purpose |
-| :--- | :--- |
-| **Docker** | Containerize frontend and backend services |
-| **Docker Compose** | Manage multi-container setup |
-| **GitHub Actions** | Build, test, and deploy automatically |
-| **Environment Variables** | Secure configuration handling |
-| **Cloud Deployment** | Deploy containers to Render, Railway, or AWS |
+| Tool                      | Purpose                                      |
+| :------------------------ | :------------------------------------------- |
+| **Docker**                | Containerize frontend and backend services   |
+| **Docker Compose**        | Manage multi-container setup                 |
+| **GitHub Actions**        | Build, test, and deploy automatically        |
+| **Environment Variables** | Secure configuration handling                |
+| **Cloud Deployment**      | Deploy containers to Render, Railway, or AWS |
 
 ## 🧰 Project Structure
 
@@ -168,17 +187,20 @@ This project is containerized using Docker and Docker Compose for easy local dev
 ### Quick Start
 
 1. **Clone the repository:**
+
    ```bash
    git clone https://github.com/Skomaiya/Group_4_DevOps.git
    cd Group_4_DevOps
    ```
 
 2. **Start all services:**
+
    ```bash
    docker-compose up --build
    ```
-   
+
    This command will:
+
    - Build the Django backend image
    - Start PostgreSQL database
    - Run database migrations
@@ -223,6 +245,79 @@ The API will be available at http://localhost:8000/api
 
 ---
 
+## 🎨 Frontend Development Setup
+
+### Prerequisites
+
+- Node.js (version 18 or higher)
+- npm or yarn package manager
+
+### Quick Start
+
+1. **Navigate to frontend directory:**
+
+   ```bash
+   cd frontend
+   ```
+
+2. **Install dependencies:**
+
+   ```bash
+   npm install
+   # or
+   yarn install
+   ```
+
+3. **Create environment file:**
+   Create a `.env` file in the `frontend/` directory:
+
+   ```env
+   VITE_API_BASE_URL=http://localhost:8000
+   ```
+
+4. **Start development server:**
+
+   ```bash
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+   The frontend will be available at http://localhost:5173
+
+### Frontend Build Commands
+
+```bash
+# Development server with hot reload
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build locally
+npm run preview
+
+# Run linting
+npm run lint
+
+# Type checking
+npm run type-check
+```
+
+### Frontend Environment Variables
+
+Create a `.env` file in the `frontend/` directory:
+
+```env
+# API Configuration
+VITE_API_BASE_URL=http://localhost:8000
+
+# Production
+# VITE_API_BASE_URL=http://40.120.26.21:8000
+```
+
+---
+
 ## 🧪 Testing & Code Quality
 
 ### Run Linting
@@ -262,11 +357,75 @@ docker-compose exec web python manage.py test --noinput
 ### Pre-commit Checklist
 
 Before pushing code, ensure:
+
 - [ ] All tests pass: `python backend/manage.py test --noinput`
 - [ ] Code passes linting: `flake8 backend/`
 - [ ] Migrations are created: `python backend/manage.py makemigrations --check`
 - [ ] No security issues: `python backend/manage.py check --deploy`
 - [ ] Docker build succeeds: `docker-compose build`
+
+---
+
+## 📡 API Endpoints Reference
+
+### Authentication Endpoints
+
+| Method | Endpoint              | Description                      | Auth Required |
+| ------ | --------------------- | -------------------------------- | ------------- |
+| POST   | `/api/auth/register/` | Register new user                | No            |
+| POST   | `/api/auth/login/`    | Login and get JWT tokens         | No            |
+| POST   | `/api/auth/logout/`   | Logout (blacklist refresh token) | Yes           |
+| GET    | `/api/user/`          | Get current user details         | Yes           |
+| GET    | `/api/profile/`       | Get user profile                 | Yes           |
+| PUT    | `/api/profile/`       | Update user profile              | Yes           |
+
+### Course Endpoints
+
+| Method | Endpoint                     | Description                | Auth Required    |
+| ------ | ---------------------------- | -------------------------- | ---------------- |
+| GET    | `/api/courses/`              | List all published courses | No               |
+| POST   | `/api/courses/`              | Create new course          | Yes (Instructor) |
+| GET    | `/api/courses/{id}/`         | Get course details         | No               |
+| PUT    | `/api/courses/{id}/`         | Update course              | Yes (Owner)      |
+| DELETE | `/api/courses/{id}/`         | Delete course              | Yes (Owner)      |
+| GET    | `/api/courses/{id}/lessons/` | Get course lessons         | Yes              |
+
+### Enrollment Endpoints
+
+| Method | Endpoint                    | Description             | Auth Required |
+| ------ | --------------------------- | ----------------------- | ------------- |
+| GET    | `/api/enrollments/`         | List user's enrollments | Yes           |
+| POST   | `/api/courses/{id}/enroll/` | Enroll in a course      | Yes (Student) |
+| DELETE | `/api/enrollments/{id}/`    | Unenroll from course    | Yes           |
+
+### Example API Request
+
+```bash
+# Register a new user
+curl -X POST http://localhost:8000/api/auth/register/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "student1",
+    "email": "student@example.com",
+    "password": "SecurePass123",
+    "role": "student",
+    "phone_number": "+250788123456",
+    "country": "Rwanda",
+    "city": "Kigali"
+  }'
+
+# Login
+curl -X POST http://localhost:8000/api/auth/login/ \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "student@example.com",
+    "password": "SecurePass123"
+  }'
+
+# Get courses (with authentication)
+curl -X GET http://localhost:8000/api/courses/ \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
 
 ---
 
@@ -351,6 +510,7 @@ Our GitHub Actions workflow automatically:
 ### Trigger CI Pipeline
 
 The pipeline runs automatically on:
+
 - Push to `main` or `develop` branches
 - Pull requests to `main`
 - Manual workflow dispatch
@@ -358,6 +518,7 @@ The pipeline runs automatically on:
 ### View Pipeline Status
 
 Check the status of your CI/CD pipeline:
+
 - Visit: https://github.com/Skomaiya/Group_4_DevOps/actions
 - Look for the green checkmark ✅ or red X ❌
 
@@ -397,7 +558,9 @@ docker-compose exec web python manage.py showmigrations
 
 ## 🔍 Troubleshooting
 
-### Port Already in Use
+### Backend Issues
+
+#### Port Already in Use
 
 If port 8000 is already in use:
 
@@ -411,7 +574,7 @@ ports:
   - "8001:8000"  # Use port 8001 instead
 ```
 
-### Database Connection Issues
+#### Database Connection Issues
 
 ```bash
 # Recreate database container
@@ -420,7 +583,7 @@ docker-compose up -d db
 docker-compose exec web python manage.py migrate
 ```
 
-### Container Build Failures
+#### Container Build Failures
 
 ```bash
 # Clear Docker cache and rebuild
@@ -430,7 +593,7 @@ docker-compose build --no-cache
 docker-compose up
 ```
 
-### Permission Errors
+#### Permission Errors
 
 ```bash
 # Fix file permissions (Linux/macOS)
@@ -438,6 +601,53 @@ sudo chown -R $USER:$USER .
 
 # Run as root in container (not recommended for production)
 docker-compose exec --user root web bash
+```
+
+### Frontend Issues
+
+#### CORS Errors
+
+If you see CORS errors in the browser console:
+
+1. Check that `CORS_ALLOWED_ORIGINS` in `backend/learnhub_api/settings.py` includes your frontend URL
+2. Verify the `VITE_API_BASE_URL` in frontend `.env` file is correct
+3. Ensure the backend server is running
+
+#### Blank Page or Components Not Loading
+
+```bash
+# Clear node modules and reinstall
+cd frontend
+rm -rf node_modules package-lock.json
+npm install
+
+# Clear Vite cache
+rm -rf node_modules/.vite
+
+# Rebuild
+npm run dev
+```
+
+#### API Request Failures
+
+1. **Check network tab** in browser DevTools to see actual request/response
+2. **Verify token**: Check localStorage for `access_token`
+3. **Check backend logs**: Look for errors in terminal running backend
+4. **Test API directly**: Use curl or Postman to verify endpoint works
+
+```bash
+# Test if backend is responding
+curl http://localhost:8000/api/courses/
+```
+
+#### TypeScript Errors
+
+```bash
+# Run type checking
+npm run type-check
+
+# Rebuild with clean cache
+npm run build -- --force
 ```
 
 ---
@@ -456,35 +666,41 @@ docker-compose exec --user root web bash
 Use this checklist to track your DevOps implementation progress:
 
 - [ ] **Version Control**
+
   - [ ] Repository initialized with meaningful commits
   - [ ] `.gitignore` configured properly
   - [ ] Branch protection rules enabled on `main`
 
 - [ ] **Containerization**
+
   - [ ] Dockerfile created and optimized
   - [ ] docker-compose.yml configured
   - [ ] Multi-stage builds implemented (if applicable)
   - [ ] Non-root user configured in container
 
 - [ ] **CI/CD Pipeline**
+
   - [ ] GitHub Actions workflow file created
   - [ ] Automated testing on push/PR
   - [ ] Linting integrated
   - [ ] Build status badge in README
 
 - [ ] **Testing**
+
   - [ ] Unit tests written for models
   - [ ] API endpoint tests implemented
   - [ ] Test coverage > 70%
   - [ ] Tests run in CI pipeline
 
 - [ ] **Security**
+
   - [ ] Secrets managed via environment variables
   - [ ] `.env` file in `.gitignore`
   - [ ] Django security checks pass
   - [ ] Dependencies scanned for vulnerabilities
 
 - [ ] **Documentation**
+
   - [ ] README with setup instructions
   - [ ] API documentation (Swagger/ReDoc)
   - [ ] Code comments where necessary
@@ -517,6 +733,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 👨‍💻 Team Contact
 
 For questions or support, reach out to the team:
+
 - **Patrick Mukunzi** - Frontend Development
 - **Samuel Komaiya** - Backend Development
 - **Plamedi Mayala** - Backend Development
